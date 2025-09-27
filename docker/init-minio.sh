@@ -21,8 +21,8 @@ echo ">> Enable versioning"
 mc version enable "${ALIAS}/landing-zone" || true
 
 echo ">> Create prefixes"
-printf "" | mc pipe "${ALIAS}/landing-zone/temporal-landing/.keep" || true
-printf "" | mc pipe "${ALIAS}/landing-zone/persistent-landing/.keep" || true
+printf "" | mc pipe "${ALIAS}/landing-zone/temporal_landing/.keep" || true
+printf "" | mc pipe "${ALIAS}/landing-zone/persistent_landing/.keep" || true
 
 mc anonymous set private "${ALIAS}/landing-zone" || true
 mc ls --recursive "${ALIAS}/landing-zone" || true

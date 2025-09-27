@@ -32,3 +32,6 @@ chmod +x init-minio.sh
 > docker compose down -v
 > docker compose up -d
 > ```
+
+Github repository: https://github.com/yasser-el-mansouri/adsdb-multimodal-food-data-management
+HuggingFace datasets source: https://huggingface.co/datasets/ADSDB-DYS/adsdb-multimodal-food-data-management/tree/main

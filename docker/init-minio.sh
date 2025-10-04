@@ -16,11 +16,13 @@ done
 
 echo ">> Create bucket landing-zone (idempotent)"
 mc mb -p "${ALIAS}/landing-zone" || true
+mc mb -p "${ALIAS}/formatted-zone" || true
 
 echo ">> Enable versioning"
 mc version enable "${ALIAS}/landing-zone" || true
+mc version enable "${ALIAS}/formatted-zone" || true
 
-echo ">> Create prefixes"
+echo ">> Create prefixes" # DELETE?
 printf "" | mc pipe "${ALIAS}/landing-zone/temporal_landing/.keep" || true
 printf "" | mc pipe "${ALIAS}/landing-zone/persistent_landing/.keep" || true
 

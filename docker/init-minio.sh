@@ -14,16 +14,37 @@ for i in $(seq 1 30); do
   sleep 1
 done
 
-echo ">> Create bucket landing-zone (idempotent)"
-mc mb -p "${ALIAS}/landing-zone" || true
+create_if_missing() {
+  BUCKET="$1"
+  echo ">> Ensure bucket ${BUCKET}"
+  if ! mc ls "${ALIAS}/${BUCKET}" >/dev/null 2>&1; then
+    mc mb -p "${ALIAS}/${BUCKET}"
+  else
+    echo "   - ${BUCKET} already exists"
+  fi
+}
 
-echo ">> Enable versioning"
+create_if_missing "landing-zone"
+create_if_missing "formatted-zone"
+create_if_missing "trusted-zone"
+create_if_missing "exploitation-zone"
+
+echo ">> Enable versioning (idempotent)"
 mc version enable "${ALIAS}/landing-zone" || true
+mc version enable "${ALIAS}/formatted-zone" || true
+mc version enable "${ALIAS}/trusted-zone" || true
+mc version enable "${ALIAS}/exploitation-zone" || true
 
-echo ">> Create prefixes"
-printf "" | mc pipe "${ALIAS}/landing-zone/temporal_landing/.keep" || true
-printf "" | mc pipe "${ALIAS}/landing-zone/persistent_landing/.keep" || true
-
+echo ">> Set anonymous access to private (idempotent)"
 mc anonymous set private "${ALIAS}/landing-zone" || true
+mc anonymous set private "${ALIAS}/formatted-zone" || true
+mc anonymous set private "${ALIAS}/trusted-zone" || true
+mc anonymous set private "${ALIAS}/exploitation-zone" || true
+
+echo ">> List buckets (recursive) — won't fail the script if empty"
 mc ls --recursive "${ALIAS}/landing-zone" || true
+mc ls --recursive "${ALIAS}/formatted-zone" || true
+mc ls --recursive "${ALIAS}/trusted-zone" || true
+mc ls --recursive "${ALIAS}/exploitation-zone" || true
+
 echo ">> Init OK"

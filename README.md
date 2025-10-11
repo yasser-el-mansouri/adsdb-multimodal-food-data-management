@@ -35,22 +35,3 @@ chmod +x init-minio.sh
 
 Github repository: https://github.com/yasser-el-mansouri/adsdb-multimodal-food-data-management
 HuggingFace datasets source: https://huggingface.co/datasets/ADSDB-DYS/adsdb-multimodal-food-data-management/tree/main
-
-
-
-
-### Next up → Trusted Zone 🔍
-
-
-
----
-
-### After that → Exploitation Zone 💡
-
----
-
-
-
----
-
-¿Quieres que te haga también una versión corta tipo resumen (2 párrafos) por si quieres ponerlo como mensaje “fijado” o en la descripción del repo?

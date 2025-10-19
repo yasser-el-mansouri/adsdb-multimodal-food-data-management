@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-10-12T15-17-27Z",
+  "timestamp": "2025-10-19T19-11-01Z",
   "source": "s3://formatted-zone/images/",
   "total_images_scanned": 11,
   "unique_recipe_ids": 7,
@@ -15,29 +15,29 @@
   ],
   "recipe_to_images": {
     "000095fc1d": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$19214085d36fb535c7dbf24d178dea1b__000095fc1d_0.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$19214085d36fb535c7dbf24d178dea1b__000095fc1d_0.jpg"
     ],
     "00003a70b1": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$1a426726a1e467b8e6360e980b03f611__00003a70b1_1.jpg",
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$1b1a47ccbb9d3b879c21952c03111b34__00003a70b1_2.jpg",
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$b07c43b0325f168d7ce2b580d8e4b2a4__00003a70b1_0.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$1a426726a1e467b8e6360e980b03f611__00003a70b1_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$1b1a47ccbb9d3b879c21952c03111b34__00003a70b1_2.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$b07c43b0325f168d7ce2b580d8e4b2a4__00003a70b1_0.jpg"
     ],
     "00010c7867": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$4786052a58187b0a9c875fde7cf940c9__00010c7867_0.jpg",
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$a558f045aadaf96e44b67c18e77b0a87__00010c7867_1.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$4786052a58187b0a9c875fde7cf940c9__00010c7867_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$a558f045aadaf96e44b67c18e77b0a87__00010c7867_1.jpg"
     ],
     "0000b1e2b5": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$6aaf18e8462526c1298ea0ccfaa861a5__0000b1e2b5_0.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$6aaf18e8462526c1298ea0ccfaa861a5__0000b1e2b5_0.jpg"
     ],
     "0000c79afb": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$6e0720efb93c1e5c1719b5b4c0c4cd7e__0000c79afb_0.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$6e0720efb93c1e5c1719b5b4c0c4cd7e__0000c79afb_0.jpg"
     ],
     "00010d44c7": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$89e502dee0f72c8b4b9382d5566e84c3__00010d44c7_0.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$89e502dee0f72c8b4b9382d5566e84c3__00010d44c7_0.jpg"
     ],
     "00007bfd16": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$9e7c94ba98c15fd4bf9c2014acc3a8d6__00007bfd16_0.jpg",
-      "images/image$adsdb-multimodal-food-data-management$2025-10-12T10-21-28Z$f048b362a2cd8db702bf00f52307e6d5__00007bfd16_1.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$9e7c94ba98c15fd4bf9c2014acc3a8d6__00007bfd16_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$f048b362a2cd8db702bf00f52307e6d5__00007bfd16_1.jpg"
     ]
   }
 }

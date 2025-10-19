@@ -67,3 +67,5 @@ urllib3==2.5.0
 wcwidth==0.2.14
 xxhash==3.6.0
 yarl==1.22.0
+opencv-python-headless==4.12.0.88
+ImageHash==4.3.2

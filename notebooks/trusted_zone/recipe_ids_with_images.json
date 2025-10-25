@@ -1,9 +1,9 @@
 {
-  "timestamp": "2025-10-19T19-11-01Z",
+  "timestamp": "2025-10-25T18-01-57Z",
   "source": "s3://formatted-zone/images/",
-  "total_images_scanned": 11,
-  "unique_recipe_ids": 7,
-  "total_images_matched": 11,
+  "total_images_scanned": 101,
+  "unique_recipe_ids": 59,
+  "total_images_matched": 101,
   "recipe_ids_with_images": [
     "00003a70b1",
     "00007bfd16",
@@ -11,33 +11,279 @@
     "0000b1e2b5",
     "0000c79afb",
     "00010c7867",
-    "00010d44c7"
+    "00010d44c7",
+    "00016355e6",
+    "000238353f",
+    "00034ad6cc",
+    "00034cf3f3",
+    "0003d5b120",
+    "0004073370",
+    "00047059be",
+    "0004c091a0",
+    "00050108a0",
+    "00054e238b",
+    "000590db74",
+    "00059477e2",
+    "00059b093b",
+    "0006354bc3",
+    "00063fb14c",
+    "0006c5e4eb",
+    "00073a6b36",
+    "0007a00526",
+    "0007a28fe7",
+    "00082e1318",
+    "00089c3010",
+    "00089de6f7",
+    "0008b8f5bc",
+    "0008de82a3",
+    "0008e9296d",
+    "0008fab425",
+    "000984c4d3",
+    "00098bc4cc",
+    "000a3d10fb",
+    "000b09bc1c",
+    "000b71bd25",
+    "000bba053c",
+    "000bcc1e31",
+    "000bd531d5",
+    "000c3fbb33",
+    "000c4d4523",
+    "000c9dace9",
+    "000cc17819",
+    "000cc7abe7",
+    "000d39d105",
+    "000d679873",
+    "000d73dc07",
+    "000dc3e7e7",
+    "000dfc842f",
+    "000eb2a4d9",
+    "000eb6f05a",
+    "000ee3c428",
+    "00100336d5",
+    "0010923f5c",
+    "00111b70f6",
+    "001128ebd8",
+    "001148ab26"
   ],
   "recipe_to_images": {
+    "000b71bd25": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$023bdcc87e1cb309921cc24051bd24e0__000b71bd25_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$24250ee2c3fc6f8a1639adafc0105e29__000b71bd25_4.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$26f424f36357fc1fbf130a1d6b56e90b__000b71bd25_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$7704a969b6fd51553d1363eeda531cb6__000b71bd25_3.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$f583dcfc01e921ee1f9f86ba9ed44391__000b71bd25_2.jpg"
+    ],
+    "000bd531d5": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$1131df21b2f8a0beef920711e0b8bde5__000bd531d5_0.jpg"
+    ],
+    "00059477e2": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$11623d02da5633ddae2ec9cd3e18bf13__00059477e2_0.jpg"
+    ],
+    "000bba053c": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$119b8b2249d9012935ba228549bba6c5__000bba053c_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$f70dd6b413316dfccbba21faeaf2aded__000bba053c_1.jpg"
+    ],
+    "00073a6b36": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$142496c88baebda2c924c53461d0f78e__00073a6b36_0.jpg"
+    ],
+    "00059b093b": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$178c1af104b971fe99d70bfdaf0b9f10__00059b093b_0.jpg"
+    ],
     "000095fc1d": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$19214085d36fb535c7dbf24d178dea1b__000095fc1d_0.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$19214085d36fb535c7dbf24d178dea1b__000095fc1d_0.jpg"
     ],
     "00003a70b1": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$1a426726a1e467b8e6360e980b03f611__00003a70b1_1.jpg",
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$1b1a47ccbb9d3b879c21952c03111b34__00003a70b1_2.jpg",
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$b07c43b0325f168d7ce2b580d8e4b2a4__00003a70b1_0.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$1a426726a1e467b8e6360e980b03f611__00003a70b1_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$1b1a47ccbb9d3b879c21952c03111b34__00003a70b1_2.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$b07c43b0325f168d7ce2b580d8e4b2a4__00003a70b1_0.jpg"
+    ],
+    "000b09bc1c": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$1c16b2f48838a8c0a3a50d0fb7b4d3d8__000b09bc1c_0.jpg"
+    ],
+    "000eb2a4d9": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$1d77e796af5a42913a70cdf06e3d15b6__000eb2a4d9_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$534cc1d2c9a0c61cd6eac9003a7f5a5b__000eb2a4d9_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$db57adec291f4c2dd5d5a009d9390b09__000eb2a4d9_2.jpg"
+    ],
+    "00089de6f7": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$1f319b35211a3460a2ea0c4e6a9a8092__00089de6f7_0.jpg"
+    ],
+    "0008e9296d": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$27411161d5ab042cbe985fea570e18c9__0008e9296d_0.jpg"
+    ],
+    "0008b8f5bc": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$29a6b894f0b8a4baa0fa34c9ae16449f__0008b8f5bc_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$44af7d617efb40fb4459a98c3f66b5f7__0008b8f5bc_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$b0fe8d68a5e1583737cced900cb58ff3__0008b8f5bc_2.jpg"
+    ],
+    "00034ad6cc": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$2ae214acf9fa1e79658ea486f850525c__00034ad6cc_2.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$85ae0f868eeaff2e38971c848cbe8d71__00034ad6cc_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$fb5e74d207155ada179586fadfd41b4c__00034ad6cc_0.jpg"
+    ],
+    "000590db74": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$2beb30949c65b2f7b28a032ffda5959b__000590db74_0.jpg"
+    ],
+    "00034cf3f3": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$39ae3497dba7d5906d1134259dfcf84f__00034cf3f3_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$8f1d8e67153f9cf2472502426b8ecf05__00034cf3f3_1.jpg"
+    ],
+    "0003d5b120": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$46ffc3890fb1c38ca6bf1520471269cf__0003d5b120_0.jpg"
     ],
     "00010c7867": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$4786052a58187b0a9c875fde7cf940c9__00010c7867_0.jpg",
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$a558f045aadaf96e44b67c18e77b0a87__00010c7867_1.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$4786052a58187b0a9c875fde7cf940c9__00010c7867_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$a558f045aadaf96e44b67c18e77b0a87__00010c7867_1.jpg"
+    ],
+    "0008fab425": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$57a871858fda5288104a328ebea956b1__0008fab425_2.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$88675e129b9665e804ed7aac3007eb43__0008fab425_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$bbde1e628998635ea8afb61510eeeddb__0008fab425_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$fdc2fdec3209bfc126175cfb4cc8fe56__0008fab425_3.jpg"
+    ],
+    "000c3fbb33": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$58646544ed25094a257f61d3ee77083f__000c3fbb33_0.jpg"
+    ],
+    "00047059be": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$5fa6352d9a2d3953ec1b1bdde5658bf1__00047059be_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$aa96ee07545dc7c815d404942f3f28c7__00047059be_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$e9da53b4f23ab299b2299f8cb8d83bee__00047059be_2.jpg"
+    ],
+    "000dfc842f": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$6052963ccafa1e6f2b44540d7411d764__000dfc842f_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$68d70ac73e8fddc2f7c7a70c662df7e1__000dfc842f_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$8e0d7863f25243a791e17138ad248fc6__000dfc842f_3.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$957cc0867b05580876f52038e904c2ee__000dfc842f_7.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$d3539cf556b138c08a3f561fd9f28c97__000dfc842f_5.jpg"
+    ],
+    "000cc7abe7": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$623fe74ce8b5d09bf816cc98fa3451e6__000cc7abe7_0.jpg"
+    ],
+    "000ee3c428": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$624faf7fa7dd887ba158a9359e28570a__000ee3c428_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$6640db44a5c6ead314e3c4652aed9531__000ee3c428_2.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$75e36d82ef9ecbf32b2a1e3b1c6b7397__000ee3c428_8.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$7738b68adabb7169966074d4c6cf1317__000ee3c428_3.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$971ea95e727b6768d888278062f22a73__000ee3c428_7.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$a74a8d2bc7819e56a7ccd5f59a4b199c__000ee3c428_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$abd68e9ab82ee44fc8f620e8bd1adccf__000ee3c428_4.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$b6c8c43e11b4cacf8189d5c2925b433c__000ee3c428_6.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$d342949e3bdd5fb828b161f4f9915f0b__000ee3c428_5.jpg"
+    ],
+    "0007a28fe7": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$696e8155589b80eb0ec8cf18b083b669__0007a28fe7_0.jpg"
     ],
     "0000b1e2b5": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$6aaf18e8462526c1298ea0ccfaa861a5__0000b1e2b5_0.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$6aaf18e8462526c1298ea0ccfaa861a5__0000b1e2b5_0.jpg"
+    ],
+    "001148ab26": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$6d0cdfb181c234894dc0b8ee94d46ecc__001148ab26_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$c261053cb7c31aa125c6460318c0f56f__001148ab26_0.jpg"
+    ],
+    "000a3d10fb": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$6d9911addf791600d8b30ecb4523c410__000a3d10fb_2.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$95309a44b884429c22a20615d0b98aaa__000a3d10fb_3.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$ae27e3e2776fef8a31dcce629c659a76__000a3d10fb_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$af49a87777bc5cd25a75117ad00fea5f__000a3d10fb_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$fb1cbf424829b1a08c3b370bd3217a6e__000a3d10fb_4.jpg"
     ],
     "0000c79afb": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$6e0720efb93c1e5c1719b5b4c0c4cd7e__0000c79afb_0.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$6e0720efb93c1e5c1719b5b4c0c4cd7e__0000c79afb_0.jpg"
+    ],
+    "00089c3010": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$72b3e6e5ece452f537675217b7cc8fe1__00089c3010_0.jpg"
+    ],
+    "0006c5e4eb": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$7309215c1ecdbdfdca241376e56bd6bd__0006c5e4eb_0.jpg"
+    ],
+    "0006354bc3": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$76b064e7793ff50589b5a30296084630__0006354bc3_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$dc5038364b2665f78442881d8c4dd660__0006354bc3_0.jpg"
+    ],
+    "000238353f": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$7f01f4e6109d990f3a2b1725592aca71__000238353f_0.jpg"
+    ],
+    "00111b70f6": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$819b257e2425749a9598eafb0235b5dc__00111b70f6_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$de57131e176e114167df92db6b595632__00111b70f6_1.jpg"
+    ],
+    "0004073370": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$83189752b485fd356984f8964f675bdf__0004073370_0.jpg"
+    ],
+    "00100336d5": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$83f3a3d75fcb0f47e45a2e6782c333bb__00100336d5_0.jpg"
+    ],
+    "000cc17819": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$8881ebaad092c858056d52604ad8f087__000cc17819_0.jpg"
     ],
     "00010d44c7": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$89e502dee0f72c8b4b9382d5566e84c3__00010d44c7_0.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$89e502dee0f72c8b4b9382d5566e84c3__00010d44c7_0.jpg"
+    ],
+    "000d73dc07": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$8dbc71ebdfa2836bd1f9a0f8e4bfdc02__000d73dc07_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$c6d72c5fa94f1d9fbb6b48e008c9f614__000d73dc07_1.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$e41ef454ab6fa276a9d071fffcbc2101__000d73dc07_2.jpg"
+    ],
+    "00016355e6": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$90edba3308a2ad4ed2d6cdc58e7e4a27__00016355e6_0.jpg"
+    ],
+    "000984c4d3": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$91a167b00e749337df943902c35bba1c__000984c4d3_0.jpg"
+    ],
+    "00054e238b": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$93f4f81c3dcc8cf10d140eccdd36f3c3__00054e238b_0.jpg"
+    ],
+    "00082e1318": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$97276ba02a887b528c09bd59dad3ce13__00082e1318_0.jpg"
     ],
     "00007bfd16": [
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$9e7c94ba98c15fd4bf9c2014acc3a8d6__00007bfd16_0.jpg",
-      "images/image$adsdb-multimodal-food-data-management$2025-10-19T18-08-36Z$f048b362a2cd8db702bf00f52307e6d5__00007bfd16_1.jpg"
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$9e7c94ba98c15fd4bf9c2014acc3a8d6__00007bfd16_0.jpg",
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$f048b362a2cd8db702bf00f52307e6d5__00007bfd16_1.jpg"
+    ],
+    "00063fb14c": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$a4ceb432f1c35f0de4da866ab18b4656__00063fb14c_0.jpg"
+    ],
+    "000d679873": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$b1d206a40b5dea717e3a81e85b8a9fc1__000d679873_0.jpg"
+    ],
+    "001128ebd8": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$bbfd659d2c840decae3b55ac6beb9ebb__001128ebd8_0.jpg"
+    ],
+    "00098bc4cc": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$bdce510ea0e1856b7ab1d508f9a126bd__00098bc4cc_0.jpg"
+    ],
+    "000dc3e7e7": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$c286b2d709037f6206e7d3a8d89d4558__000dc3e7e7_0.jpg"
+    ],
+    "000eb6f05a": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$c9bad1e94d418a7a32dcfcb28f110ddc__000eb6f05a_0.jpg"
+    ],
+    "0007a00526": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$cf04ee4347486fe4e1e270b0d42e6278__0007a00526_0.jpg"
+    ],
+    "00050108a0": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$cfd505481137b1714fdb8ac79fdc8320__00050108a0_0.jpg"
+    ],
+    "000c4d4523": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$d29f5b49a0bbe5d83a1e2cdfc56f121f__000c4d4523_0.jpg"
+    ],
+    "000d39d105": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$dad82c28af73b9f85ab27ef7fd49e127__000d39d105_0.jpg"
+    ],
+    "0008de82a3": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$ddda811d95b5cda929185b50b56b757a__0008de82a3_0.jpg"
+    ],
+    "000c9dace9": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$ec753e257500b2d2c6455e8080e5f279__000c9dace9_0.jpg"
+    ],
+    "0004c091a0": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$f402ec01fc2d65a5bfb03727c59657ba__0004c091a0_0.jpg"
+    ],
+    "0010923f5c": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$f6b83c33c286784a0cebdbbe4849e14c__0010923f5c_0.jpg"
+    ],
+    "000bcc1e31": [
+      "images/image$adsdb-multimodal-food-data-management$2025-10-25T17-44-21Z$f81a9c593da49674756ac22f1f61e0a2__000bcc1e31_0.jpg"
     ]
   }
 }

@@ -209,3 +209,30 @@ __marimo__/
 
 docker/_minio_data/notebooks/landing_zone/recipes_index.json
 docker/_minio_data/
+
+
+# Ignore all ChromaDB persistence files and folders
+chroma/
+chroma_* 
+*.chroma
+chroma.sqlite3
+chroma.db
+
+# Ignore ChromaDB exploitation or collection folders
+chroma_exploitation/
+*/chroma_exploitation/
+
+# Ignore dynamically generated collection directories (UUIDs)
+# e.g. 15ef97f1-405b-4125-9d16-143ada4af4d4
+*[0-9a-fA-F]-[0-9a-fA-F]-[0-9a-fA-F]-[0-9a-fA-F]-[0-9a-fA-F]/
+
+# Ignore any folder with UUID-like names anywhere in the project
+**/[0-9a-fA-F]*-[0-9a-fA-F]*-[0-9a-fA-F]*-[0-9a-fA-F]*-[0-9a-fA-F]*/
+
+# Optional: ignore any ChromaDB files anywhere
+**/chroma.sqlite3
+**/chroma.db
+
+chroma_exploitation/
+
+*.json

@@ -19,56 +19,8 @@ from boto3.s3.transfer import TransferConfig
 from huggingface_hub import HfApi, hf_hub_url
 import ijson
 
-# Import configuration directly to avoid dependency issues
-import sys
-sys.path.append('app/utils')
-from config import PipelineConfig
-
-# For now, we'll create minimal versions of the other classes
-class S3Client:
-    def __init__(self, config):
-        self.config = config
-        # Minimal implementation for now
-        pass
-
-class Logger:
-    def __init__(self, name, level="INFO"):
-        self.name = name
-        self.level = level
-    
-    def info(self, message):
-        print(f"[INFO] {message}")
-    
-    def warning(self, message):
-        print(f"[WARNING] {message}")
-    
-    def error(self, message):
-        print(f"[ERROR] {message}")
-
-class PerformanceMonitor:
-    def __init__(self, config):
-        self.config = config
-    
-    def start(self):
-        pass
-    
-    def stop(self):
-        return {}
-
-def utc_timestamp():
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
-
-def error_handler(logger, operation):
-    from contextlib import contextmanager
-    @contextmanager
-    def _handler():
-        try:
-            yield
-        except Exception as e:
-            logger.error(f"Error in {operation}: {str(e)}")
-            raise
-    return _handler()
+# Import shared utilities
+from shared_utils import PipelineConfig, S3Client, Logger, PerformanceMonitor, utc_timestamp, error_handler
 
 
 class TemporalLandingProcessor:

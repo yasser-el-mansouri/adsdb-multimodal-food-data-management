@@ -15,10 +15,8 @@ from typing import Dict, List, Any, Iterable, Set, Optional
 import pandas as pd
 from unidecode import unidecode
 
-from app.utils import (
-    PipelineConfig, S3Client, Logger, PerformanceMonitor, 
-    utc_timestamp, error_handler
-)
+# Import shared utilities
+from shared_utils import PipelineConfig, S3Client, Logger, PerformanceMonitor, utc_timestamp, error_handler
 
 
 class TrustedDocumentsProcessor:
@@ -169,7 +167,7 @@ class TrustedDocumentsProcessor:
     
     def read_jsonl_lines(self, bucket: str, key: str) -> Iterable[str]:
         """Stream JSONL lines from S3."""
-        obj = self.s3_client.get_object(Bucket=bucket, Key=key)
+        obj = self.s3_client.get_object(bucket=bucket, key=key)
         for raw in obj["Body"].iter_lines():
             if raw:  # skip empty
                 yield raw

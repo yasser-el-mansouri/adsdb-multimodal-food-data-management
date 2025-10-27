@@ -16,10 +16,8 @@ from typing import Dict, List, Set, Optional, Any
 import boto3
 from botocore.exceptions import ClientError
 
-from app.utils import (
-    PipelineConfig, S3Client, Logger, PerformanceMonitor, 
-    utc_timestamp, sanitize_filename, atomic_write_json, error_handler
-)
+# Import shared utilities
+from shared_utils import PipelineConfig, S3Client, Logger, PerformanceMonitor, utc_timestamp, sanitize_filename, atomic_write_json, error_handler
 
 
 class PersistentLandingProcessor:
@@ -124,7 +122,7 @@ class PersistentLandingProcessor:
         
         try:
             if ext in (".jsonl", ".ndjson"):
-                obj = self.s3_client.get_object(Bucket=bucket, Key=key)
+                obj = self.s3_client.get_object(bucket=bucket, key=key)
                 for line in obj["Body"].iter_lines():
                     if not line:
                         continue
@@ -136,7 +134,7 @@ class PersistentLandingProcessor:
                         continue
                 return ids
             
-            obj = self.s3_client.get_object(Bucket=bucket, Key=key)
+            obj = self.s3_client.get_object(bucket=bucket, key=key)
             body = obj["Body"].read()
             try:
                 data = json.loads(body)

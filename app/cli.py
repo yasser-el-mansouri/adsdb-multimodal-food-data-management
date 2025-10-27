@@ -15,7 +15,30 @@ from rich.table import Table
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from app.utils import PipelineConfig, Logger
+# Import configuration and utilities directly to avoid dependency issues
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
+import config
+PipelineConfig = config.PipelineConfig
+
+# Simple logger implementation
+class Logger:
+    def __init__(self, name: str, level: str = "INFO"):
+        self.name = name
+        self.level = level
+    
+    def info(self, message: str):
+        print(f"[INFO] {self.name}: {message}")
+    
+    def warning(self, message: str):
+        print(f"[WARNING] {self.name}: {message}")
+    
+    def error(self, message: str):
+        print(f"[ERROR] {self.name}: {message}")
+    
+    def debug(self, message: str):
+        print(f"[DEBUG] {self.name}: {message}")
 
 app = typer.Typer(help="Data Pipeline CLI")
 console = Console()
@@ -196,7 +219,7 @@ def test():
 
 
 @app.command()
-def monitor():
+def monitor(): # TODO ver si quitar de aaui readme etc
     """Show real-time pipeline monitoring."""
     try:
         console.print("[bold blue]Pipeline monitoring (press Ctrl+C to stop)...[/bold blue]")

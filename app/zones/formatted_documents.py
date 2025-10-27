@@ -15,10 +15,8 @@ from typing import Dict, List, Any, Iterable
 import boto3
 import ijson
 
-from app.utils import (
-    PipelineConfig, S3Client, Logger, PerformanceMonitor, 
-    utc_timestamp, to_builtin, error_handler
-)
+# Import shared utilities
+from shared_utils import PipelineConfig, S3Client, Logger, PerformanceMonitor, utc_timestamp, to_builtin, error_handler
 
 
 class FormattedDocumentsProcessor:
@@ -57,7 +55,7 @@ class FormattedDocumentsProcessor:
     
     def iter_jsonl(self, bucket: str, key: str) -> Iterable[Dict[str, Any]]:
         """Iterate over JSONL file."""
-        obj = self.s3_client.get_object(Bucket=bucket, Key=key)
+        obj = self.s3_client.get_object(bucket=bucket, key=key)
         for line in obj["Body"].iter_lines():
             if not line:
                 continue
@@ -65,7 +63,7 @@ class FormattedDocumentsProcessor:
     
     def iter_json_array(self, bucket: str, key: str) -> Iterable[Dict[str, Any]]:
         """Iterate over JSON array file."""
-        obj = self.s3_client.get_object(Bucket=bucket, Key=key)
+        obj = self.s3_client.get_object(bucket=bucket, key=key)
         for item in ijson.items(obj["Body"], "item"):
             yield to_builtin(item)
     
@@ -74,14 +72,14 @@ class FormattedDocumentsProcessor:
         if key.lower().endswith((".jsonl", ".ndjson")):
             return self.iter_jsonl(bucket, key)
         
-        obj = self.s3_client.get_object(Bucket=bucket, Key=key)
+        obj = self.s3_client.get_object(bucket=bucket, key=key)
         head = obj["Body"].read(2048)
         obj["Body"].close()
         
         if head.lstrip()[:1] == b"[":
             return self.iter_json_array(bucket, key)
         
-        obj = self.s3_client.get_object(Bucket=bucket, Key=key)
+        obj = self.s3_client.get_object(bucket=bucket, key=key)
         body = obj["Body"].read()
         try:
             one = to_builtin(json.loads(body))

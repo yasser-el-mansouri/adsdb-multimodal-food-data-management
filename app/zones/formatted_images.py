@@ -14,10 +14,8 @@ import boto3
 from PIL import Image, ImageOps
 import numpy as np
 
-from app.utils import (
-    PipelineConfig, S3Client, Logger, PerformanceMonitor, 
-    utc_timestamp, error_handler
-)
+# Import shared utilities
+from shared_utils import PipelineConfig, S3Client, Logger, PerformanceMonitor, utc_timestamp, error_handler
 
 
 class FormattedImagesProcessor:
@@ -161,7 +159,7 @@ class FormattedImagesProcessor:
                         
                         try:
                             # Load original image
-                            obj = self.s3_client.get_object(Bucket=self.src_bucket, Key=src_key)
+                            obj = self.s3_client.get_object(bucket=self.src_bucket, key=src_key)
                             raw = obj["Body"].read()
                             img = Image.open(io.BytesIO(raw))
                             img.load()
@@ -221,7 +219,7 @@ class FormattedImagesProcessor:
                             
                             try:
                                 # Load and normalize image
-                                obj = self.s3_client.get_object(Bucket=self.src_bucket, Key=src_key)
+                                obj = self.s3_client.get_object(bucket=self.src_bucket, key=src_key)
                                 raw = obj["Body"].read()
                                 img = Image.open(io.BytesIO(raw))
                                 img.load()

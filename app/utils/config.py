@@ -37,8 +37,14 @@ class PipelineConfig:
                 else:
                     logging.warning(f"YAML not available and JSON config not found, using defaults")
                     return self._get_default_config()
+            except Exception as e:
+                logging.warning(f"Error loading YAML config: {e}, using defaults")
+                return self._get_default_config()
         except FileNotFoundError:
             logging.warning(f"Config file {self.config_path} not found, using defaults")
+            return self._get_default_config()
+        except Exception as e:
+            logging.warning(f"Error loading config: {e}, using defaults")
             return self._get_default_config()
     
     def _load_env(self):

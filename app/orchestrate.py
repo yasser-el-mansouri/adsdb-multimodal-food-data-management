@@ -127,7 +127,8 @@ class PipelineOrchestrator:
     
     def run_pipeline(self, stages: Optional[List[str]] = None) -> Dict[str, Any]:
         """Run the complete pipeline or specified stages."""
-        self.monitor.start()
+        import time
+        pipeline_start_time = time.time()
         
         # Validate environment
         issues = self.validate_environment()
@@ -145,17 +146,21 @@ class PipelineOrchestrator:
                     result = self.run_stage(stage_name, processor_class)
                     self.results[stage_name] = result
                 else:
-                    self.logger.info(f"⏭️  Skipping stage: {stage_name}")
+                    self.logger.info(f"[SKIP] Skipping stage: {stage_name}")
+            
+            # Calculate total execution time
+            pipeline_end_time = time.time()
+            total_execution_time = pipeline_end_time - pipeline_start_time
             
             # Generate final report
-            final_metrics = self.monitor.stop()
-            final_metrics.update({
+            final_metrics = {
                 "stages_completed": len(self.results),
                 "stages_failed": len(self.errors),
                 "total_stages": len(stages_to_run),
+                "execution_time": total_execution_time,
                 "results": self.results,
                 "errors": self.errors
-            })
+            }
             
             self.logger.info(f"[SUCCESS] Pipeline completed successfully!")
             self.logger.info(f"[METRICS] Final metrics: {final_metrics}")

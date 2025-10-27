@@ -2,6 +2,23 @@
 
 This repository contains a modularized operations environment for the ADSDB Multimodal Food Data Management pipeline. The system transforms raw data from external sources through multiple processing zones, ultimately creating a searchable knowledge base of recipes with images.
 
+## 🪟 Windows Users Quick Start
+
+**Important**: Windows PowerShell/CMD may have issues with emoji display in the CLI. Use these commands:
+
+```bash
+# Set UTF-8 encoding for proper display
+chcp 65001
+
+# Then run CLI commands normally
+python app/cli.py run
+```
+
+**Alternative**: Use the orchestrator directly (always works):
+```bash
+python app/orchestrate.py
+```
+
 ## 🏗️ Architecture Overview
 
 The pipeline follows a data lake architecture with four main zones:
@@ -68,38 +85,56 @@ app/
 
 4. **Initialize the pipeline**
    ```bash
-   python -m app.cli init
+   python app/cli.py init
    ```
 
 5. **Validate configuration**
    ```bash
-   python -m app.cli validate
+   python app/cli.py validate
    ```
 
 ### Running the Pipeline
 
+#### Windows Users (PowerShell/CMD)
+**Important**: Windows terminals may have issues with emoji display. Use these commands:
+
+```bash
+# Set UTF-8 encoding for proper display
+chcp 65001
+
+# Then run CLI commands
+python app/cli.py run
+```
+
 #### Full Pipeline
 ```bash
-python -m app.cli run
+# Using CLI (recommended)
+python app/cli.py run
+
+# Or using orchestrator directly (always works)
+python app/orchestrate.py
 ```
 
 #### Specific Stages
 ```bash
 # Run only the landing zone
-python -m app.cli run --stages temporal_landing,persistent_landing
+python app/cli.py run --stages temporal_landing,persistent_landing
 
 # Run a single stage
-python -m app.cli run --stage trusted_images
+python app/cli.py run --stage trusted_images
+
+# Run from formatted zone onwards (faster for development)
+python app/cli.py run --stages formatted_documents,formatted_images,trusted_images,trusted_documents,exploitation_documents
 ```
 
 #### Dry Run Mode
 ```bash
-python -m app.cli run --dry-run
+python app/cli.py run --dry-run
 ```
 
 #### Verbose Logging
 ```bash
-python -m app.cli run --verbose
+python app/cli.py run --verbose
 ```
 
 ## ⚙️ Configuration
@@ -219,19 +254,19 @@ python -m pytest app/tests/integration/ -v
 
 ### All Tests
 ```bash
-python -m app.cli test
+python app/cli.py test
 ```
 
 ## 📊 Monitoring
 
 ### Pipeline Status
 ```bash
-python -m app.cli status
+python app/cli.py status
 ```
 
 ### Real-time Monitoring
 ```bash
-python -m app.cli monitor
+python app/cli.py monitor
 ```
 
 ### Performance Metrics
@@ -271,7 +306,7 @@ The pipeline is designed to work with the existing Docker setup:
 docker-compose up -d
 
 # Run the pipeline
-python -m app.cli run
+python app/cli.py run
 ```
 
 ## 📈 Performance Considerations
@@ -320,7 +355,7 @@ python -m app.cli run
 Enable debug logging for detailed troubleshooting:
 
 ```bash
-python -m app.cli run --verbose
+python app/cli.py run --verbose
 ```
 
 ## 📝 Logging

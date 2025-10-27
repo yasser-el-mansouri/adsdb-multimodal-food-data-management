@@ -7,18 +7,25 @@ These tests verify that the pipeline components work together correctly.
 import unittest
 import tempfile
 import os
+import sys
 import json
 from unittest.mock import patch, MagicMock
 from pathlib import Path
 
-from app.utils import PipelineConfig
-from app.zones.temporal_landing import TemporalLandingProcessor
-from app.zones.persistent_landing import PersistentLandingProcessor
-from app.zones.formatted_documents import FormattedDocumentsProcessor
-from app.zones.formatted_images import FormattedImagesProcessor
-from app.zones.trusted_images import TrustedImagesProcessor
-from app.zones.trusted_documents import TrustedDocumentsProcessor
-from app.zones.exploitation_documents import ExploitationDocumentsProcessor
+# Add app directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from utils.config import PipelineConfig
+
+# Import processors using the working approach
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'zones'))
+from temporal_landing import TemporalLandingProcessor
+from persistent_landing import PersistentLandingProcessor
+from formatted_documents import FormattedDocumentsProcessor
+from formatted_images import FormattedImagesProcessor
+from trusted_images import TrustedImagesProcessor
+from trusted_documents import TrustedDocumentsProcessor
+from exploitation_documents import ExploitationDocumentsProcessor
 
 
 class TestPipelineIntegration(unittest.TestCase):
@@ -133,7 +140,7 @@ monitoring:
         "HF_TOKEN": "test_token",
         "HF_ORGA": "test_org",
         "HF_DATASET": "test_dataset",
-        "CHROMA_PERSIST_DIR": self.temp_dir
+        "CHROMA_PERSIST_DIR": "/tmp/test_chroma"
     })
     def test_temporal_landing_processor_initialization(self):
         """Test temporal landing processor initialization."""
@@ -226,7 +233,7 @@ monitoring:
         "MINIO_USER": "test_user",
         "MINIO_PASSWORD": "test_password",
         "MINIO_ENDPOINT": "http://localhost:9000",
-        "CHROMA_PERSIST_DIR": self.temp_dir
+        "CHROMA_PERSIST_DIR": "/tmp/test_chroma"
     })
     def test_exploitation_documents_processor_initialization(self):
         """Test exploitation documents processor initialization."""
@@ -236,7 +243,7 @@ monitoring:
         self.assertEqual(processor.src_bucket, "test-trusted-zone")
         self.assertEqual(processor.collection_name, "test_collection")
         self.assertEqual(processor.embedding_model, "all-MiniLM-L6-v2")
-        self.assertEqual(processor.persist_dir, self.temp_dir)
+        self.assertEqual(processor.persist_dir, "/tmp/test_chroma")
     
     def test_configuration_consistency(self):
         """Test that configuration is consistent across processors."""
@@ -261,7 +268,7 @@ monitoring:
                 "HF_TOKEN": "test_token",
                 "HF_ORGA": "test_org",
                 "HF_DATASET": "test_dataset",
-                "CHROMA_PERSIST_DIR": self.temp_dir
+                "CHROMA_PERSIST_DIR": "/tmp/test_chroma"
             }):
                 try:
                     processor = processor_class(config)
@@ -281,7 +288,7 @@ monitoring:
             "HF_TOKEN": "test_token",
             "HF_ORGA": "test_org",
             "HF_DATASET": "test_dataset",
-            "CHROMA_PERSIST_DIR": self.temp_dir
+            "CHROMA_PERSIST_DIR": "/tmp/test_chroma"
         }):
             # Test temporal landing
             temporal = TemporalLandingProcessor(config)
@@ -414,7 +421,7 @@ monitoring:
             "HF_TOKEN": "test_token",
             "HF_ORGA": "test_org",
             "HF_DATASET": "test_dataset",
-            "CHROMA_PERSIST_DIR": self.temp_dir
+            "CHROMA_PERSIST_DIR": "/tmp/test_chroma"
         }):
             # Test that each stage can be initialized
             # This verifies that the data flow configuration is correct

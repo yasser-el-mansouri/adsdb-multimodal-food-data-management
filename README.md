@@ -371,6 +371,51 @@ python app/cli.py run
 - **MinIO**: S3-compatible object storage
 - **Data persistence**: All data stored in `docker/_minio_data/`
 
+### Docker Setup Issues and Solutions
+
+#### MinIO Initialization Script
+
+The `init-minio.sh` script may need to be made executable and have its line endings fixed:
+
+**Make sure the init script is executable (Use Git Bash on Windows or any Unix shell)**:
+```bash
+chmod +x init-minio.sh
+```
+
+**Windows line-endings gotcha (CRLF/BOM)**:
+On Windows, the script may fail due to line endings or BOM. Fix it with:
+
+```bash
+# Fix line endings and remove BOM
+sed -i 's/\r$//' init-minio.sh
+sed -i '1s/^\xEF\xBB\xBF//' init-minio.sh
+chmod +x init-minio.sh
+```
+
+**After fixing the script, re-run**:
+```bash
+docker compose down -v
+docker compose up -d
+```
+
+#### Common Docker Issues
+
+1. **Permission Denied on init-minio.sh**
+   - Solution: Use Git Bash or WSL on Windows
+   - Run: `chmod +x docker/init-minio.sh`
+
+2. **Script Execution Errors**
+   - Solution: Fix line endings with the sed commands above
+   - Ensure script has Unix line endings (LF, not CRLF)
+
+3. **MinIO Bucket Creation Fails**
+   - Solution: Check MinIO logs: `docker logs <minio-container-id>`
+   - Verify script permissions and line endings
+
+4. **Port Conflicts**
+   - Solution: Change ports in `docker-compose.yml` if 9000/9001 are in use
+   - Update `MINIO_ENDPOINT` in your `.env` file accordingly
+
 ## 🧪 Testing
 
 The pipeline includes comprehensive unit and integration tests to ensure reliability and correctness.

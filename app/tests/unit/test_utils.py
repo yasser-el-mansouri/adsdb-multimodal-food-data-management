@@ -10,7 +10,6 @@ from unittest.mock import MagicMock, patch
 
 from app.utils import (
     Logger,
-    PerformanceMonitor,
     PipelineConfig,
     S3Client,
     atomic_write_json,
@@ -201,55 +200,6 @@ class TestLogger(unittest.TestCase):
         logger.warning("Test warning message")
         logger.error("Test error message")
         logger.debug("Test debug message")
-
-
-class TestPerformanceMonitor(unittest.TestCase):
-    """Test cases for PerformanceMonitor class."""
-
-    def test_monitor_disabled(self):
-        """Test monitor when disabled."""
-        config = PipelineConfig("nonexistent.yaml")
-        config._config["monitoring"]["enabled"] = False
-
-        monitor = PerformanceMonitor(config)
-        monitor.start()
-        monitor.stop()
-
-        # Should return empty dict when disabled
-        metrics = monitor.stop()
-        self.assertEqual(metrics, {})
-
-    @patch("psutil.virtual_memory")
-    @patch("psutil.disk_usage")
-    @patch("psutil.cpu_percent")
-    def test_monitor_enabled(self, mock_cpu, mock_disk, mock_memory):
-        """Test monitor when enabled."""
-        # Mock psutil calls
-        mock_memory.return_value.used = 1000000
-        mock_memory.return_value.percent = 50.0
-        mock_disk.return_value.used = 2000000
-        mock_cpu.return_value = 25.0
-
-        config = PipelineConfig("nonexistent.yaml")
-        config._config["monitoring"]["enabled"] = True
-
-        monitor = PerformanceMonitor(config)
-        monitor.start()
-
-        # Simulate some work
-        import time
-
-        time.sleep(0.01)
-
-        metrics = monitor.stop()
-
-        self.assertIn("execution_time", metrics)
-        self.assertIn("memory_usage", metrics)
-        self.assertIn("disk_usage", metrics)
-        self.assertIn("peak_memory", metrics)
-        self.assertIn("cpu_percent", metrics)
-
-        self.assertGreater(metrics["execution_time"], 0)
 
 
 class TestValidation(unittest.TestCase):

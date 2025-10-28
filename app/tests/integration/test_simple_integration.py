@@ -109,7 +109,7 @@ class TestSimpleIntegration(unittest.TestCase):
 
     def test_utility_functions(self):
         """Test utility functions work correctly."""
-        from zones.shared_utils import sanitize_filename, utc_timestamp
+        from utils.shared import sanitize_filename, utc_timestamp
 
         # Test timestamp generation
         timestamp = utc_timestamp()

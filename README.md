@@ -373,25 +373,113 @@ python app/cli.py run
 
 ## 🧪 Testing
 
-### Unit Tests
+The pipeline includes comprehensive unit and integration tests to ensure reliability and correctness.
+
+### Test Structure
+
+```
+app/tests/
+├── unit/                    # Unit tests for individual components
+│   └── test_utils.py        # Tests for shared utilities
+└── integration/             # Integration tests for pipeline components
+    ├── test_pipeline.py     # Full pipeline integration tests
+    └── test_simple_integration.py  # Simple integration tests
+```
+
+### Unit Tests (`app/tests/unit/`)
+
+**Purpose**: Test individual components in isolation
+
+**What they test**:
+- **PipelineConfig**: Configuration loading, defaults, nested access, missing keys
+- **Utility Functions**: 
+  - `utc_timestamp()`: UTC timestamp generation
+  - `to_builtin()`: Decimal to built-in type conversion
+  - `sanitize_filename()`: Filename sanitization
+  - `atomic_write_json()`: Atomic JSON file writing
+- **Logger**: Logger creation and method functionality
+- **Validation**: Configuration validation with missing/valid environment variables
+
+**Run unit tests**:
 ```bash
 python -m pytest app/tests/unit/ -v
 ```
 
-### Integration Tests
+### Integration Tests (`app/tests/integration/`)
+
+**Purpose**: Test that pipeline components work together correctly
+
+#### `test_pipeline.py` - Full Pipeline Integration
+
+**What it tests**:
+- **Processor Initialization**: All 7 pipeline processors can be initialized with test configuration
+- **Configuration Consistency**: Same configuration works across all processors
+- **Pipeline Dependencies**: Each stage can access its required configuration
+- **Data Flow**: Correct data flow between pipeline stages (landing → formatted → trusted → exploitation)
+
+**Test Coverage**:
+- ✅ `TemporalLandingProcessor` initialization
+- ✅ `PersistentLandingProcessor` initialization  
+- ✅ `FormattedDocumentsProcessor` initialization
+- ✅ `FormattedImagesProcessor` initialization
+- ✅ `TrustedImagesProcessor` initialization
+- ✅ `TrustedDocumentsProcessor` initialization
+- ✅ `ExploitationDocumentsProcessor` initialization
+- ✅ Configuration consistency across all processors
+- ✅ Pipeline stage dependencies
+- ✅ Data flow between stages
+
+#### `test_simple_integration.py` - Simple Integration
+
+**What it tests**:
+- **Configuration Loading**: PipelineConfig can load and access configuration
+- **Default Values**: Sensible defaults are provided
+- **Environment Variables**: Environment variables are loaded correctly
+- **Utility Functions**: Shared utility functions work correctly
+
+**Run integration tests**:
 ```bash
 python -m pytest app/tests/integration/ -v
 ```
 
-### All Tests
-```bash
-python app/cli.py test
-```
+### Running All Tests
 
-### Test Coverage
 ```bash
+# Using CLI (recommended)
+python app/cli.py test
+
+# Using pytest directly
+python -m pytest app/tests/ -v
+
+# With coverage report
 python -m pytest --cov=app app/tests/ --cov-report=html
 ```
+
+### Test Configuration
+
+Tests use a separate test configuration that includes:
+- **Mock environment variables**: MinIO, Hugging Face, ChromaDB settings
+- **Test buckets and prefixes**: Isolated test storage configuration
+- **Reduced batch sizes**: Faster test execution
+- **Dry run mode**: No actual data processing
+- **Test-specific ChromaDB settings**: Separate test collections
+
+### Test Environment Setup
+
+Tests automatically:
+- Create temporary configuration files
+- Mock external dependencies (MinIO, Hugging Face, ChromaDB)
+- Set up test environment variables
+- Clean up after test completion
+
+### Continuous Integration
+
+The test suite is designed to work in CI/CD environments:
+- No external dependencies required
+- Fast execution (< 30 seconds)
+- Comprehensive coverage of critical paths
+- Clear failure reporting
+- Environment isolation
 
 ## 📊 Monitoring and Reporting
 

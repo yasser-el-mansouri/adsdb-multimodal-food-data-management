@@ -17,15 +17,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from utils.config import PipelineConfig
 
-# Import processors using the working approach
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "zones"))
-from exploitation_documents import ExploitationDocumentsProcessor
-from formatted_documents import FormattedDocumentsProcessor
-from formatted_images import FormattedImagesProcessor
-from persistent_landing import PersistentLandingProcessor
-from temporal_landing import TemporalLandingProcessor
-from trusted_documents import TrustedDocumentsProcessor
-from trusted_images import TrustedImagesProcessor
+# Import processors from the new zone structure
+from zones.landing_zone.temporal_landing import TemporalLandingProcessor
+from zones.landing_zone.persistent_landing import PersistentLandingProcessor
+from zones.formatted_zone.formatted_documents import FormattedDocumentsProcessor
+from zones.formatted_zone.formatted_images import FormattedImagesProcessor
+from zones.trusted_zone.trusted_images import TrustedImagesProcessor
+from zones.trusted_zone.trusted_documents import TrustedDocumentsProcessor
+from zones.exploitation_zone.exploitation_documents import ExploitationDocumentsProcessor
 
 
 class TestPipelineIntegration(unittest.TestCase):
@@ -111,9 +110,10 @@ document_processing:
     remove_punctuation: true
     remove_stopwords: true
 
-chromadb:
+chromadb_documents:
   collection_name: "test_collection"
   embedding_model: "all-MiniLM-L6-v2"
+  persist_dir: "app/zones/exploitation_zone/chroma_documents"
   metadata:
     modality: "text"
     model: "all-MiniLM-L6-v2"
@@ -253,7 +253,6 @@ monitoring:
             "MINIO_USER": "test_user",
             "MINIO_PASSWORD": "test_password",
             "MINIO_ENDPOINT": "http://localhost:9000",
-            "CHROMA_PERSIST_DIR": "/tmp/test_chroma",
         },
     )
     def test_exploitation_documents_processor_initialization(self):
@@ -264,7 +263,8 @@ monitoring:
         self.assertEqual(processor.src_bucket, "test-trusted-zone")
         self.assertEqual(processor.collection_name, "test_collection")
         self.assertEqual(processor.embedding_model, "all-MiniLM-L6-v2")
-        self.assertEqual(processor.persist_dir, "/tmp/test_chroma")
+        # persist_dir now comes from config, not environment variable
+        self.assertEqual(processor.persist_dir, "app/zones/exploitation_zone/chroma_documents")
 
     def test_configuration_consistency(self):
         """Test that configuration is consistent across processors."""
@@ -417,9 +417,10 @@ document_processing:
     remove_punctuation: true
     remove_stopwords: true
 
-chromadb:
+chromadb_documents:
   collection_name: "test_collection"
   embedding_model: "all-MiniLM-L6-v2"
+  persist_dir: "app/zones/exploitation_zone/chroma_documents"
   metadata:
     modality: "text"
     model: "all-MiniLM-L6-v2"

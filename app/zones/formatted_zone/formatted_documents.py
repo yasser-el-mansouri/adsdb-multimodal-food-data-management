@@ -16,7 +16,7 @@ import boto3
 import ijson
 
 # Import shared utilities
-from shared_utils import PipelineConfig, S3Client, Logger, PerformanceMonitor, utc_timestamp, to_builtin, error_handler
+from app.utils.shared import PipelineConfig, S3Client, Logger, utc_timestamp, to_builtin, error_handler
 
 
 class FormattedDocumentsProcessor:
@@ -26,9 +26,7 @@ class FormattedDocumentsProcessor:
         """Initialize the processor."""
         self.config = config
         self.logger = Logger("formatted_documents", config.get("monitoring.log_level", "INFO"))
-        self.s3_client = S3Client(config)
-        self.monitor = PerformanceMonitor(config)
-        
+        self.s3_client = S3Client(config)        
         # Configuration
         self.src_bucket = config.get("storage.buckets.landing_zone")
         self.src_prefix = config.get("storage.prefixes.persistent_landing_documents")
@@ -127,9 +125,7 @@ class FormattedDocumentsProcessor:
             dst[new_k] = v
     
     def process(self) -> Dict[str, Any]:
-        """Main processing method."""
-        self.monitor.start()
-        
+        """Main processing method."""        
         try:
             with error_handler(self.logger, "formatted_documents_processing"):
                 keys = list(self.list_docs(self.src_bucket, self.src_prefix))
@@ -178,16 +174,13 @@ class FormattedDocumentsProcessor:
                         }
                     )
                     self.logger.info(f"[OK] Wrote JSONL sample to s3://{self.out_bucket}/{self.out_key}")
-                
-                metrics = self.monitor.stop()
-                metrics.update({
+                    
+                    return {
                     "total_files": len(keys),
                     "total_records": total_seen,
                     "unique_records": len(joined),
                     "timestamp": utc_timestamp()
-                })
-                
-                return metrics
+                }
         
         except Exception as e:
             self.logger.error(f"Formatted documents processing failed: {e}")

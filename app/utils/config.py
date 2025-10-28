@@ -14,7 +14,7 @@ from pathlib import Path
 class PipelineConfig:
     """Configuration manager for the pipeline."""
     
-    def __init__(self, config_path: str = "app/config/pipeline.yaml"):
+    def __init__(self, config_path: str = "app/pipeline.yaml"):
         """Initialize configuration from YAML file."""
         self.config_path = config_path
         self._config = self._load_config()
@@ -26,7 +26,8 @@ class PipelineConfig:
             # Try to import yaml, fallback to JSON if not available
             try:
                 import yaml
-                with open(self.config_path, 'r', encoding='utf-8') as f:
+                # Use utf-8-sig to gracefully handle BOM if present
+                with open(self.config_path, 'r', encoding='utf-8-sig') as f:
                     return yaml.safe_load(f)
             except ImportError:
                 # Fallback: try to load as JSON
@@ -77,8 +78,7 @@ class PipelineConfig:
                     "formatted_documents": "documents",
                     "trusted_images": "images",
                     "trusted_documents": "documents",
-                    "trusted_reports": "reports",
-                    "chroma_exploitation": "chroma_exploitation"
+                    "trusted_reports": "reports"
                 }
             },
             "huggingface": {
@@ -109,16 +109,9 @@ class PipelineConfig:
                 "skip_fields": ["url", "partition"],
                 "always_tag": True,
                 "nutrition": {
-                    "totals_key_candidates": [
-                        "nutr_values_per100g__from_recipes_with_nutritional_info",
-                        "nutr_values_per100g",
-                        "nutr_values"
-                    ],
-                    "per_ingredient_key_candidates": [
-                        "nutr_per_ingredient__from_recipes_with_nutritional_info",
-                        "nutr_per_ingredient"
-                    ],
-                    "numeric_fields": ["energy", "fat", "protein", "salt", "saturates", "sugars"],
+                    "totals_key_candidates": ["nutrition_per100g", "nutrition_totals"],
+                    "per_ingredient_key_candidates": ["nutrition_per_ingredient"],
+                    "numeric_fields": ["fat", "salt", "saturates", "sugars"],
                     "drop_totals_if_per_ingredient_present": True
                 },
                 "text_cleaning": {
@@ -127,27 +120,36 @@ class PipelineConfig:
                     "remove_stopwords": True
                 }
             },
-            "chromadb": {
-                "collection_name": "trusted_zone_documents",
+            "chromadb_documents": {
+                "collection_name": "exploitation_documents",
                 "embedding_model": "Qwen/Qwen3-Embedding-0.6B",
-                "metadata": {
-                    "modality": "text",
-                    "model": "Qwen/Qwen3-Embedding-0.6B",
-                    "source": "minio"
-                }
+                "metadata": {},
+                "persist_dir": "app/zones/exploitation_zone/chroma_documents"
+            },
+            "chromadb_images": {
+                "collection_name": "exploitation_images",
+                "embedding_model": "clip-ViT-B-32",
+                "metadata": {},
+                "persist_dir": "app/zones/exploitation_zone/chroma_images"
+            },
+            "file_paths": {
+                "image_index": "app/zones/landing_zone/image_index.json",
+                "recipes_index": "app/zones/landing_zone/recipes_index.json",
+                "recipe_ids_with_images": "app/zones/trusted_zone/recipe_ids_with_images.json"
+            },
+            "transfer": {
+                "multipart_threshold": 8388608,
+                "multipart_chunksize": 8388608,
+                "max_concurrency": 4,
+                "use_threads": True
+            },
+            "testing": {
+                "max_recipes": 1000,
+                "max_processed": 50
             },
             "monitoring": {
                 "enabled": True,
-                "log_level": "INFO",
-                "performance_tracking": True,
-                "resource_monitoring": True,
-                "metrics": [
-                    "execution_time",
-                    "memory_usage",
-                    "disk_usage",
-                    "processed_records",
-                    "error_count"
-                ]
+                "log_level": "INFO"
             }
         }
     

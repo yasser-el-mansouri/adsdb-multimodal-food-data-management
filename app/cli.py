@@ -13,7 +13,6 @@ import typer
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
-from rich.progress import Progress, SpinnerColumn, TextColumn
 
 # Import configuration and utilities directly to avoid dependency issues
 import sys
@@ -21,24 +20,6 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
 import config
 PipelineConfig = config.PipelineConfig
-
-# Simple logger implementation
-class Logger:
-    def __init__(self, name: str, level: str = "INFO"):
-        self.name = name
-        self.level = level
-    
-    def info(self, message: str):
-        print(f"[INFO] {self.name}: {message}")
-    
-    def warning(self, message: str):
-        print(f"[WARNING] {self.name}: {message}")
-    
-    def error(self, message: str):
-        print(f"[ERROR] {self.name}: {message}")
-    
-    def debug(self, message: str):
-        print(f"[DEBUG] {self.name}: {message}")
 
 app = typer.Typer(help="Data Pipeline CLI")
 console = Console()
@@ -50,7 +31,7 @@ def run(
     stage: Optional[str] = typer.Option(None, "--stage", help="Single stage to run"),
     dry_run: bool = typer.Option(False, "--dry-run", help="Run in dry-run mode"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Verbose logging"),
-    config: str = typer.Option("app/config/pipeline.yaml", "--config", "-c", help="Configuration file path")
+    config: str = typer.Option("app/pipeline.yaml", "--config", "-c", help="Configuration file path")
 ):
     """Run the data pipeline."""
     try:
@@ -65,7 +46,7 @@ def run(
             cmd.append("--dry-run")
         if verbose:
             cmd.append("--verbose")
-        if config != "app/config/pipeline.yaml":
+        if config != "app/pipeline.yaml":
             cmd.extend(["--config", config])
         
         console.print(f"[bold blue]Running command:[/bold blue] {' '.join(cmd)}")
@@ -159,8 +140,7 @@ def validate():
         # Validate configuration
         issues = []
         try:
-            from app.utils import validate_config
-            issues = validate_config(config)
+            issues = config.validate_config(PipelineConfig())
         except Exception as e:
             console.print(f"[red]✗[/red] Configuration validation failed: {e}")
             return
@@ -189,6 +169,13 @@ def test():
     """Run tests for the pipeline."""
     try:
         console.print("[bold blue]Running pipeline tests...[/bold blue]")
+        
+        # Check if pytest is available
+        try:
+            import pytest
+        except ImportError:
+            console.print("[red]✗[/red] pytest is not installed. Please install it with: pip install pytest")
+            sys.exit(1)
         
         # Run unit tests
         console.print("\n[bold]Running unit tests...[/bold]")
@@ -219,25 +206,92 @@ def test():
 
 
 @app.command()
-def monitor(): # TODO ver si quitar de aaui readme etc
-    """Show real-time pipeline monitoring."""
+def metrics():
+    """Show current system metrics."""
     try:
-        console.print("[bold blue]Pipeline monitoring (press Ctrl+C to stop)...[/bold blue]")
+        import sys
+        import os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
+        from monitoring import get_system_info, utc_timestamp
         
-        # This would typically connect to a monitoring system
-        # For now, just show a placeholder
-        console.print("Monitoring functionality would be implemented here")
-        console.print("This could include:")
-        console.print("- Real-time execution status")
-        console.print("- Resource usage metrics")
-        console.print("- Error tracking")
-        console.print("- Performance metrics")
-    
-    except KeyboardInterrupt:
-        console.print("\n[bold yellow]Monitoring stopped by user[/bold yellow]")
+        console.print("[bold blue]📊 Current System Metrics[/bold blue]")
+        console.print("=" * 50)
+        
+        info = get_system_info()
+        timestamp = utc_timestamp()
+        
+        console.print(f"Timestamp: {timestamp}")
+        console.print(f"CPU Count: {info['cpu_count']}")
+        console.print(f"CPU Usage: {info['cpu_percent']:.1f}%")
+        console.print(f"Memory Usage: {info['memory_percent']:.1f}%")
+        console.print(f"Memory Used: {info['memory_used'] / (1024**3):.2f} GB")
+        console.print(f"Memory Available: {info['memory_available'] / (1024**3):.2f} GB")
+        console.print(f"Disk Usage: {info['disk_percent']:.1f}%")
+        console.print(f"Disk Used: {info['disk_used'] / (1024**3):.2f} GB")
+        console.print(f"Disk Free: {info['disk_free'] / (1024**3):.2f} GB")
+        
+        if not info['psutil_available']:
+            console.print("\n[yellow]⚠️  psutil not available - install with: pip install psutil[/yellow]")
+            
     except Exception as e:
-        console.print(f"[bold red]Error:[/bold red] {e}")
-        sys.exit(1)
+        console.print(f"[bold red]❌ Error getting metrics:[/bold red] {e}")
+
+
+@app.command()
+def report():
+    """Generate monitoring report from latest metrics file."""
+    try:
+        import glob
+        import json
+        import sys
+        import os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
+        from monitoring import create_monitoring_report
+        
+        # Find latest metrics file
+        metrics_files = glob.glob("pipeline_metrics_*.json")
+        if not metrics_files:
+            console.print("[red]❌ No metrics files found. Run the pipeline first to generate metrics.[/red]")
+            return
+        
+        latest_file = max(metrics_files, key=os.path.getctime)
+        
+        with open(latest_file, 'r') as f:
+            data = json.load(f)
+        
+        console.print(f"[bold blue]📊 Monitoring Report from {latest_file}[/bold blue]")
+        console.print("=" * 60)
+        
+        # Pipeline summary
+        pipeline_metrics = data.get('pipeline_metrics', {})
+        console.print(f"Execution Time: {pipeline_metrics.get('execution_time', 0):.2f} seconds")
+        console.print(f"Memory Usage: {pipeline_metrics.get('memory_usage', 0) / (1024**2):.1f} MB")
+        console.print(f"Disk Usage: {pipeline_metrics.get('disk_usage', 0) / (1024**2):.1f} MB")
+        console.print(f"Peak Memory: {pipeline_metrics.get('peak_memory', 0) / (1024**3):.2f} GB")
+        console.print(f"Current Memory: {pipeline_metrics.get('current_memory_percent', 0):.1f}%")
+        console.print(f"Current Disk: {pipeline_metrics.get('current_disk_percent', 0):.1f}%")
+        console.print(f"CPU Usage: {pipeline_metrics.get('cpu_percent', 0):.1f}%")
+        
+        # Stage details
+        stage_metrics = data.get('stage_metrics', {})
+        if stage_metrics:
+            console.print(f"\n[bold green]📈 Stage Performance:[/bold green]")
+            for stage_name, stage_data in stage_metrics.items():
+                duration = stage_data.get('duration', 0)
+                memory = stage_data.get('memory_usage', 0)
+                success = stage_data.get('success', True)
+                status = "✅" if success else "❌"
+                console.print(f"  {status} {stage_name}: {duration:.2f}s, {memory / (1024**2):.1f} MB")
+        
+        # Errors
+        errors = data.get('pipeline_metrics', {}).get('errors', [])
+        if errors:
+            console.print(f"\n[bold red]❌ Errors ({len(errors)}):[/bold red]")
+            for error in errors:
+                console.print(f"  - {error.get('stage', 'unknown')}: {error.get('error', 'unknown error')}")
+        
+    except Exception as e:
+        console.print(f"[bold red]❌ Error generating report:[/bold red] {e}")
 
 
 @app.command()
@@ -253,13 +307,13 @@ def init():
         if not env_file.exists() and env_sample.exists():
             console.print(f"[yellow]⚠[/yellow] .env file not found. Please copy {env_sample} to .env and configure it.")
         
-        # Check if config directory exists
-        config_dir = Path("app/config")
-        if not config_dir.exists():
-            console.print(f"[red]✗[/red] Config directory not found: {config_dir}")
+        # Check if config file exists
+        config_file = Path("app/pipeline.yaml")
+        if not config_file.exists():
+            console.print(f"[red]✗[/red] Config file not found: {config_file}")
             sys.exit(1)
         
-        console.print("[green]✓[/green] Config directory found")
+        console.print("[green]✓[/green] Config file found")
         
         # Check if required directories exist
         required_dirs = ["app/zones", "app/utils", "app/tests"]

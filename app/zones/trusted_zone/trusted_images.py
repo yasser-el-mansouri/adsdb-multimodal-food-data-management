@@ -1,38 +1,36 @@
 """
-Formatted Zone - Images Processing
+Trusted Zone - Images Processing
 
-This module handles the images format processing step for the Formatted Zone.
-It processes and organizes images from the landing zone.
+This module handles the image processing step for the Trusted Zone.
+It extracts recipe IDs from images and copies filtered images to the trusted zone.
 """
 
 import io
-import re
+import json
 from pathlib import PurePosixPath
 from typing import Dict, List, Any, Iterable, Set
 
 import boto3
 from PIL import Image, ImageOps
-import numpy as np
 
 # Import shared utilities
-from shared_utils import PipelineConfig, S3Client, Logger, PerformanceMonitor, utc_timestamp, error_handler
+from app.utils.shared import PipelineConfig, S3Client, Logger, utc_timestamp, error_handler, ImageUtils
 
 
-class FormattedImagesProcessor:
-    """Processor for formatted zone images."""
+class TrustedImagesProcessor:
+    """Processor for trusted zone images."""
     
     def __init__(self, config: PipelineConfig):
         """Initialize the processor."""
         self.config = config
-        self.logger = Logger("formatted_images", config.get("monitoring.log_level", "INFO"))
-        self.s3_client = S3Client(config)
-        self.monitor = PerformanceMonitor(config)
-        
+        self.logger = Logger("trusted_images", config.get("monitoring.log_level", "INFO"))
+        self.s3_client = S3Client(config)        
         # Configuration
-        self.src_bucket = config.get("storage.buckets.landing_zone")
-        self.src_prefix = config.get("storage.prefixes.persistent_landing_images")
-        self.out_bucket = config.get("storage.buckets.formatted_zone")
-        self.out_prefix = config.get("storage.prefixes.formatted_images")
+        self.src_bucket = config.get("storage.buckets.formatted_zone")
+        self.src_prefix = config.get("storage.prefixes.formatted_images")
+        self.out_bucket = config.get("storage.buckets.trusted_zone")
+        self.out_prefix = config.get("storage.prefixes.trusted_images")
+        self.report_prefix = config.get("storage.prefixes.trusted_reports")
         
         # Image processing configuration
         self.target_size = tuple(config.get("image_processing.target_size", [512, 512]))
@@ -55,25 +53,12 @@ class FormattedImagesProcessor:
         self.dry_run = config.get("pipeline.dry_run", False)
         self.overwrite = config.get("pipeline.overwrite", True)
         
+        # Output file for documents processing - save in configured path
+        self.recipe_ids_file = config.get("file_paths.recipe_ids_with_images", "app/zones/trusted_zone/recipe_ids_with_images.json")
+        
         # Check for optional dependencies
-        self.cv2_available = self._check_cv2()
-        self.imagehash_available = self._check_imagehash()
-    
-    def _check_cv2(self) -> bool:
-        """Check if OpenCV is available."""
-        try:
-            import cv2
-            return True
-        except ImportError:
-            return False
-    
-    def _check_imagehash(self) -> bool:
-        """Check if imagehash is available."""
-        try:
-            import imagehash
-            return True
-        except ImportError:
-            return False
+        self.cv2_available = ImageUtils.check_cv2()
+        self.imagehash_available = ImageUtils.check_imagehash()
     
     def list_images(self, bucket: str, prefix: str) -> Iterable[str]:
         """List image files in bucket with prefix."""
@@ -81,61 +66,70 @@ class FormattedImagesProcessor:
         for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
             for obj in page.get("Contents", []):
                 key = obj["Key"]
-                if key.endswith("/"):
-                    continue
-                if key.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff')):
+                if not key.endswith("/"):
                     yield key
     
     def compute_metrics(self, img: Image.Image) -> Dict[str, Any]:
         """Compute image quality metrics."""
-        w, h = img.size
-        aspect = (w / h) if h else 0
-        metrics = {"w": w, "h": h, "aspect": float(aspect)}
-        
-        if self.cv2_available:
-            import cv2
-            gray = cv2.cvtColor(np.array(img.convert("RGB")), cv2.COLOR_RGB2GRAY)
-            metrics["blur_varlap"] = float(cv2.Laplacian(gray, cv2.CV_64F).var())
-        
-        return metrics
+        return ImageUtils.compute_metrics(img)
     
     def normalize_image(self, img: Image.Image) -> bytes:
         """Normalize image to target format."""
-        img_rgb = img.convert(self.target_mode)
-        # Letterbox to keep aspect ratio
-        img_fit = ImageOps.pad(
-            img_rgb, self.target_size, 
-            method=Image.BICUBIC, 
-            color=None, 
-            centering=(0.5, 0.5)
+        return ImageUtils.normalize_image(
+            img,
+            target_size=self.target_size,
+            target_mode=self.target_mode,
+            target_format=self.target_format,
+            target_quality=self.target_quality,
         )
-        buf = io.BytesIO()
-        img_fit.save(buf, format=self.target_format, quality=self.target_quality, optimize=True)
-        return buf.getvalue()
     
     def extract_recipe_id_from_key(self, key: str) -> str:
         """Extract recipe ID from image key."""
-        name = PurePosixPath(key).name
-        # Pattern: hash__recipeId_index.ext
-        match = re.search(r"__([A-Za-z0-9_\-]+)_(\d+)\.", name)
-        return match.group(1) if match else name
+        return ImageUtils.extract_recipe_id_from_key(key)
     
     def process(self) -> Dict[str, Any]:
-        """Main processing method."""
-        self.monitor.start()
-        
+        """Main processing method."""        
         try:
-            with error_handler(self.logger, "formatted_images_processing"):
-                # Group images by recipe ID
-                recipe_images: Dict[str, List[str]] = {}
+            with error_handler(self.logger, "trusted_images_processing"):
+                # Extract recipe IDs from image filenames
+                img_ids: Set[str] = set()
+                id_to_imgkeys: Dict[str, List[str]] = {}
                 
+                count_keys = 0
                 for key in self.list_images(self.src_bucket, self.src_prefix):
-                    recipe_id = self.extract_recipe_id_from_key(key)
-                    recipe_images.setdefault(recipe_id, []).append(key)
+                    count_keys += 1
+                    rid = self.extract_recipe_id_from_key(key)
+                    if not rid:
+                        continue
+                    img_ids.add(rid)
+                    id_to_imgkeys.setdefault(rid, []).append(key)
                 
-                self.logger.info(f"Found {len(recipe_images)} recipes with images")
+                # Make copies deterministic
+                for rid in id_to_imgkeys:
+                    id_to_imgkeys[rid].sort()
                 
-                # Process images with quality screening
+                total_images = sum(len(v) for v in id_to_imgkeys.values())
+                self.logger.info(f"Scanned image keys: {count_keys}")
+                self.logger.info(f"Unique recipeIds with images: {len(img_ids)}")
+                self.logger.info(f"Total image files matched to recipeIds: {total_images}")
+                
+                # Save recipe IDs for documents processing
+                recipe_ids_data = {
+                    "timestamp": utc_timestamp(),
+                    "source": f"s3://{self.src_bucket}/{self.src_prefix}/",
+                    "total_images_scanned": count_keys,
+                    "unique_recipe_ids": len(img_ids),
+                    "total_images_matched": total_images,
+                    "recipe_ids_with_images": sorted(list(img_ids)),
+                    "recipe_to_images": {rid: keys for rid, keys in id_to_imgkeys.items()}
+                }
+                
+                if not self.dry_run:
+                    with open(self.recipe_ids_file, 'w', encoding='utf-8') as f:
+                        json.dump(recipe_ids_data, f, ensure_ascii=False, indent=2)
+                    self.logger.info(f"Saved recipe IDs to {self.recipe_ids_file}")
+                
+                # Quality screening and deduplication
                 quality_stats = {
                     "evaluated": 0,
                     "kept": 0,
@@ -146,13 +140,14 @@ class FormattedImagesProcessor:
                     "dupes_removed": 0
                 }
                 
-                kept_per_recipe: Dict[str, List[str]] = {}
+                kept_per_rid: Dict[str, List[str]] = {}
+                skips_log: List[Dict[str, str]] = []
                 seen_phashes: Dict[str, Set[str]] = {}
                 
-                for recipe_id, keys in recipe_images.items():
-                    kept_per_recipe[recipe_id] = []
+                for rid, keys in id_to_imgkeys.items():
+                    kept_per_rid[rid] = []
                     if self.deduplication_enabled and self.imagehash_available:
-                        seen_phashes[recipe_id] = set()
+                        seen_phashes[rid] = set()
                     
                     for src_key in keys:
                         quality_stats["evaluated"] += 1
@@ -165,7 +160,7 @@ class FormattedImagesProcessor:
                             img.load()
                         except Exception as e:
                             quality_stats["corrupted"] += 1
-                            self.logger.warning(f"Corrupted image {src_key}: {e}")
+                            skips_log.append({"key": src_key, "reason": f"corrupted:{type(e).__name__}"})
                             continue
                         
                         # Basic quality checks
@@ -174,10 +169,12 @@ class FormattedImagesProcessor:
                         
                         if w < self.min_width or h < self.min_height:
                             quality_stats["too_small"] += 1
+                            skips_log.append({"key": src_key, "reason": f"too_small:{w}x{h}"})
                             continue
                         
                         if not (self.min_aspect_ratio <= aspect <= self.max_aspect_ratio):
                             quality_stats["bad_aspect"] += 1
+                            skips_log.append({"key": src_key, "reason": f"bad_aspect:{aspect:.2f}"})
                             continue
                         
                         # Blur check
@@ -185,27 +182,29 @@ class FormattedImagesProcessor:
                             blur_val = metrics.get("blur_varlap", 0.0)
                             if blur_val < self.blur_varlap_min:
                                 quality_stats["too_blurry"] += 1
+                                skips_log.append({"key": src_key, "reason": f"blurry:varLap={blur_val:.2f} < {self.blur_varlap_min}"})
                                 continue
                         
                         # Deduplication check
                         if self.deduplication_enabled and self.imagehash_available:
                             import imagehash
                             ph = str(imagehash.phash(img))
-                            if ph in seen_phashes[recipe_id]:
+                            if ph in seen_phashes[rid]:
                                 quality_stats["dupes_removed"] += 1
+                                skips_log.append({"key": src_key, "reason": f"duplicate_phash:{ph}"})
                                 continue
-                            seen_phashes[recipe_id].add(ph)
+                            seen_phashes[rid].add(ph)
                         
-                        kept_per_recipe[recipe_id].append(src_key)
+                        kept_per_rid[rid].append(src_key)
                         quality_stats["kept"] += 1
                 
                 self.logger.info(f"Quality screening results: {quality_stats}")
                 
-                # Copy processed images to formatted zone
+                # Copy images to trusted zone
                 copied = skipped = 0
                 
                 if not self.dry_run:
-                    for recipe_id, keys in kept_per_recipe.items():
+                    for rid, keys in kept_per_rid.items():
                         for src_key in keys:
                             # Generate destination key
                             base = PurePosixPath(src_key).name
@@ -240,35 +239,74 @@ class FormattedImagesProcessor:
                                 self.logger.warning(f"Failed to process {src_key} -> {dst_key}: {e}")
                                 skipped += 1
                 
-                metrics = self.monitor.stop()
-                metrics.update({
-                    "total_recipes": len(recipe_images),
-                    "total_images": sum(len(keys) for keys in recipe_images.values()),
+                # Generate processing report
+                report = {
+                    "timestamp": utc_timestamp(),
+                    "processing_step": "images",
+                    "source_images_prefix": f"s3://{self.src_bucket}/{self.src_prefix}/",
+                    "destination_images_prefix": f"s3://{self.out_bucket}/{self.out_prefix}/",
+                    "total_images_scanned": count_keys,
+                    "unique_recipe_ids_with_images": len(img_ids),
+                    "total_images_matched": total_images,
+                    "quality_screen": quality_stats,
+                    "images_copied_normalized": copied,
+                    "images_skipped": skipped,
+                    "normalization": {
+                        "target_size": self.target_size,
+                        "target_mode": self.target_mode,
+                        "target_format": self.target_format,
+                        "target_quality": self.target_quality
+                    },
+                    "recipe_ids_file": self.recipe_ids_file,
+                    "dry_run": self.dry_run,
+                    "overwrite": self.overwrite
+                }
+                
+                if not self.dry_run and skips_log:
+                    # Save skips log to S3
+                    csv_buf = io.StringIO()
+                    csv_buf.write("key,reason\n")
+                    for row in skips_log:
+                        key = row["key"].replace(",", " ")
+                        reason = row["reason"].replace(",", " ")
+                        csv_buf.write(f"{key},{reason}\n")
+                    
+                    self.s3_client.put_object(
+                        bucket=self.out_bucket,
+                        key=f"{self.report_prefix}/images_skips_{utc_timestamp()}.csv",
+                        body=csv_buf.getvalue().encode("utf-8"),
+                        content_type="text/csv"
+                    )
+                
+                result = {
+                    "total_images_scanned": count_keys,
+                    "unique_recipe_ids": len(img_ids),
+                    "total_images_matched": total_images,
                     "quality_stats": quality_stats,
                     "images_copied": copied,
                     "images_skipped": skipped,
                     "timestamp": utc_timestamp()
-                })
+                }
                 
                 self.logger.info(f"[STATS] Images copied: {copied}, skipped: {skipped}")
-                return metrics
+                return result
         
         except Exception as e:
-            self.logger.error(f"Formatted images processing failed: {e}")
+            self.logger.error(f"Trusted images processing failed: {e}")
             raise
 
 
 def main():
-    """Main entry point for formatted images processing."""
+    """Main entry point for trusted images processing."""
     config = PipelineConfig()
-    processor = FormattedImagesProcessor(config)
+    processor = TrustedImagesProcessor(config)
     
     try:
         result = processor.process()
-        print(f"✅ Formatted images processing completed successfully")
+        print(f"✅ Trusted images processing completed successfully")
         print(f"📊 Metrics: {result}")
     except Exception as e:
-        print(f"❌ Formatted images processing failed: {e}")
+        print(f"❌ Trusted images processing failed: {e}")
         raise
 
 

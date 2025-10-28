@@ -16,7 +16,7 @@ import pandas as pd
 from unidecode import unidecode
 
 # Import shared utilities
-from shared_utils import PipelineConfig, S3Client, Logger, PerformanceMonitor, utc_timestamp, error_handler
+from app.utils.shared import PipelineConfig, S3Client, Logger, utc_timestamp, error_handler
 
 
 class TrustedDocumentsProcessor:
@@ -26,9 +26,7 @@ class TrustedDocumentsProcessor:
         """Initialize the processor."""
         self.config = config
         self.logger = Logger("trusted_documents", config.get("monitoring.log_level", "INFO"))
-        self.s3_client = S3Client(config)
-        self.monitor = PerformanceMonitor(config)
-        
+        self.s3_client = S3Client(config)        
         # Configuration
         self.src_bucket = config.get("storage.buckets.formatted_zone")
         self.src_key = f"{config.get('storage.prefixes.formatted_documents')}/recipes.jsonl"
@@ -36,8 +34,8 @@ class TrustedDocumentsProcessor:
         self.out_key = f"{config.get('storage.prefixes.trusted_documents')}/recipes.jsonl"
         self.report_prefix = config.get("storage.prefixes.trusted_reports")
         
-        # Input file from images processing
-        self.recipe_ids_file = "recipe_ids_with_images.json"
+        # Input file from images processing - read from configured path
+        self.recipe_ids_file = config.get("file_paths.recipe_ids_with_images", "app/zones/trusted_zone/recipe_ids_with_images.json")
         
         # Behavior flags
         self.dry_run = config.get("pipeline.dry_run", False)
@@ -211,9 +209,7 @@ class TrustedDocumentsProcessor:
         return iqr_thresholds
     
     def process(self) -> Dict[str, Any]:
-        """Main processing method."""
-        self.monitor.start()
-        
+        """Main processing method."""        
         try:
             with error_handler(self.logger, "trusted_documents_processing"):
                 # Load recipe IDs that have images
@@ -276,14 +272,11 @@ class TrustedDocumentsProcessor:
         
         self.logger.info(f"[DRY_RUN] total={total} kept_after_id={kept_after_id}")
         
-        metrics = self.monitor.stop()
-        metrics.update({
+        return {
             "total_docs": total,
             "kept_docs": kept_after_id,
             "timestamp": utc_timestamp()
-        })
-        
-        return metrics
+        }
     
     def _process_full(self, recipe_ids_with_images: Set[str], iqr_thresholds: Dict[str, Any]) -> Dict[str, Any]:
         """Process documents in full mode."""
@@ -427,16 +420,13 @@ class TrustedDocumentsProcessor:
         )
         self.logger.info(f"[OK] Wrote report -> s3://{self.out_bucket}/{self.report_prefix}/")
         
-        metrics = self.monitor.stop()
-        metrics.update({
+        return {
             "total_docs": self.doc_stats["total_read"],
             "kept_docs": self.doc_stats["kept_after_id"],
             "written_docs": self.doc_stats["written"],
             "dropped_outliers": self.doc_stats["dropped_outliers"],
             "timestamp": utc_timestamp()
-        })
-        
-        return metrics
+        }
 
 
 class MultipartJSONLWriter:

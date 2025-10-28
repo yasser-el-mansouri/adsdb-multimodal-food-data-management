@@ -7,20 +7,18 @@ It ingests data from external sources (Hugging Face) and stores it in MinIO.
 
 import os
 import json
-import hashlib
 import mimetypes
 import requests
 from pathlib import PurePosixPath
 from typing import Optional, List, Dict, Any
 from urllib.parse import urlparse
 
-import boto3
 from boto3.s3.transfer import TransferConfig
 from huggingface_hub import HfApi, hf_hub_url
 import ijson
 
 # Import shared utilities
-from shared_utils import PipelineConfig, S3Client, Logger, PerformanceMonitor, utc_timestamp, error_handler
+from app.utils.shared import PipelineConfig, S3Client, Logger, utc_timestamp, error_handler, KeyUtils
 
 
 class TemporalLandingProcessor:
@@ -31,7 +29,6 @@ class TemporalLandingProcessor:
         self.config = config
         self.logger = Logger("temporal_landing", config.get("monitoring.log_level", "INFO"))
         self.s3_client = S3Client(config)
-        self.monitor = PerformanceMonitor(config)
         
         # Hugging Face configuration
         self.hf_token = config.get_env("HF_TOKEN")
@@ -49,27 +46,17 @@ class TemporalLandingProcessor:
         self.skip_files = set(config.get("huggingface.skip_files", []))
         
         # Transfer configuration
+        transfer_config = config.get("transfer", {})
         self.transfer_config = TransferConfig(
-            multipart_threshold=8 * 1024 * 1024,
-            multipart_chunksize=8 * 1024 * 1024,
-            max_concurrency=4,
-            use_threads=True
+            multipart_threshold=transfer_config.get("multipart_threshold", 8 * 1024 * 1024),
+            multipart_chunksize=transfer_config.get("multipart_chunksize", 8 * 1024 * 1024),
+            max_concurrency=transfer_config.get("max_concurrency", 4),
+            use_threads=transfer_config.get("use_threads", True)
         )
         
         self.hf_api = HfApi()
     
-    def make_minio_key(self, path: str) -> str: # TODO ver como dejar este tipo de metodos
-        """Generate MinIO key from file path."""
-        p = PurePosixPath(path)
-        h = hashlib.sha256(str(p).encode("utf-8")).hexdigest()[:16]
-        return f"{h}__{p.name or 'file'}"
     
-    def get_original_filename_from_key(self, key: str) -> str: # TODO ver de quitar aqui y en los notebook sno se usa
-        """Extract original filename from MinIO key."""
-        name_part = PurePosixPath(key).name
-        if "__" in name_part:
-            return name_part.split("__", 1)[1]
-        return name_part
     
     def upload_from_hf_url(self, hf_url: str, original_path: str, 
                           revision: Optional[str] = None, repo_id: Optional[str] = None) -> str:
@@ -80,7 +67,7 @@ class TemporalLandingProcessor:
             r.raise_for_status()
             r.raw.decode_content = True
             
-            key = f"{self.prefix}/{self.make_minio_key(original_path)}"
+            key = f"{self.prefix}/{KeyUtils.make_minio_key(original_path)}"
             
             ctype, _ = mimetypes.guess_type(original_path)
             extra = {}
@@ -127,12 +114,6 @@ class TemporalLandingProcessor:
         }
         return mapping.get(ctype, "")
     
-    def make_minio_key_image(self, recipe_id: str, index: int, ext: str) -> str: # TODO ver si tener rollo un pauqete de metodo de clave refactored, otro de cosas para imaagenes etc
-        """Generate MinIO key for image."""
-        base_name = f"{recipe_id}_{index}.{ext or 'bin'}"
-        h = hashlib.sha256(f"{recipe_id}:{index}".encode("utf-8")).hexdigest()[:32]
-        return f"{self.prefix}/{h}__{base_name}"
-    
     def upload_image_from_url(self, url: str, recipe_id: str, index: int) -> Optional[str]:
         """Upload image from URL to MinIO."""
         headers = {}
@@ -146,7 +127,7 @@ class TemporalLandingProcessor:
                     ext = self._safe_ext_from_ctype(r.headers.get("Content-Type")) or "jpg"
                 ctype = r.headers.get("Content-Type") or mimetypes.guess_type(f"f.{ext}")[0]
                 
-                key = self.make_minio_key_image(recipe_id, index, ext)
+                key = KeyUtils.make_minio_key_image(self.prefix, recipe_id, index, ext)
                 
                 extra = {}
                 if ctype:
@@ -170,8 +151,8 @@ class TemporalLandingProcessor:
             self.logger.warning(f"Failed to upload {url} (id={recipe_id}, idx={index}): {e}")
             return None
     
-    def process_layer2_images(self, layer2_path: str):
-        """Process layer2.json file to upload images."""
+    def process_layer2_images(self, layer2_path: str) -> tuple[int, int]:
+        """Process layer2.json file to upload images. Returns (processed_recipes, processed_images)."""
         layer2_url = hf_hub_url(
             repo_id=self.repo_id, 
             filename=layer2_path, 
@@ -202,15 +183,18 @@ class TemporalLandingProcessor:
                     if self.upload_image_from_url(url, rid, idx):
                         ok += 1
                 
-                # Limit for testing (can be configured)
-                if ok > 50 or total_recipes > 1000: # TODO quitar y poner con config si eso
+                # Limit for testing (configurable)
+                max_processed = 1 #self.config.get("testing.max_processed", 50)
+                max_recipes = 2 # self.config.get("testing.max_recipes", 1000)
+                if ok > max_processed or total_recipes > max_recipes:
                     break
             
             self.logger.info(f"Layer2 processing: recipes={total_recipes}, imgs={total_imgs}, uploaded_ok={ok}")
+            
+            return total_recipes, ok
     
     def process(self) -> Dict[str, Any]:
         """Main processing method."""
-        self.monitor.start()
         
         try:
             with error_handler(self.logger, "temporal_landing_processing"):
@@ -222,6 +206,8 @@ class TemporalLandingProcessor:
                 
                 processed_files = 0
                 skipped_files = 0
+                processed_images = 0
+                processed_recipes = 0
                 
                 for path in files:
                     fname = PurePosixPath(path).name
@@ -233,7 +219,9 @@ class TemporalLandingProcessor:
                     self.logger.info(f"Processing: {fname}")
                     
                     if fname == "layer2.json":
-                        self.process_layer2_images(path)
+                        recipes_count, images_count = self.process_layer2_images(path)
+                        processed_recipes += recipes_count
+                        processed_images += images_count
                     else:
                         url = hf_hub_url(
                             repo_id=self.repo_id, 
@@ -248,18 +236,20 @@ class TemporalLandingProcessor:
                             repo_id=self.repo_id
                         )
                         self.logger.info(f"Uploaded to: {dest_uri}")
+                        processed_recipes += 1  # Count non-image files as recipes
                     
                     processed_files += 1
                 
-                metrics = self.monitor.stop()
-                metrics.update({
+                result = {
                     "processed_files": processed_files,
                     "skipped_files": skipped_files,
+                    "processed_images": processed_images,
+                    "processed_recipes": processed_recipes,
                     "timestamp": utc_timestamp()
-                })
+                }
                 
-                self.logger.info(f"Temporal landing processing completed: {metrics}")
-                return metrics
+                self.logger.info(f"Temporal landing processing completed: {result}")
+                return result
         
         except Exception as e:
             self.logger.error(f"Temporal landing processing failed: {e}")

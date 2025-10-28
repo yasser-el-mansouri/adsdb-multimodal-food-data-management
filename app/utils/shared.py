@@ -1,46 +1,46 @@
 """
-Shared utilities for zone processors.
+Shared utilities for the data pipeline.
 
-This module provides common utilities that can be imported by zone processors.
+This module provides common utilities that can be imported by any part of the pipeline.
 """
 
 import os
 import json
 import logging
 import time
-import psutil
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from contextlib import contextmanager
+from decimal import Decimal
+import hashlib
+import io
+import re
 
-import boto3
-from botocore.config import Config
-from botocore.exceptions import ClientError
+# Optional imports
+try:
+    import boto3
+    from botocore.config import Config
+    from botocore.exceptions import ClientError
+    BOTO3_AVAILABLE = True
+except ImportError:
+    BOTO3_AVAILABLE = False
+
+try:
+    from PIL import Image, ImageOps
+    import numpy as np
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
+
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
 
 # Import configuration
-import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'utils'))
-import config
-PipelineConfig = config.PipelineConfig
-
-# Load environment variables from .env file
-try:
-    from dotenv import load_dotenv
-    # Try to load from app/.env first, then from root .env
-    env_paths = [
-        os.path.join(os.path.dirname(__file__), '..', '.env'),
-        os.path.join(os.path.dirname(__file__), '..', '..', '.env')
-    ]
-    for env_path in env_paths:
-        if os.path.exists(env_path):
-            load_dotenv(env_path)
-            print(f"[INFO] Loaded environment variables from: {env_path}")
-            break
-    else:
-        print("[WARNING] No .env file found, using system environment variables")
-except ImportError:
-    print("[WARNING] python-dotenv not available, using system environment variables")
+from .config import PipelineConfig
 
 
 class S3Client:
@@ -48,6 +48,9 @@ class S3Client:
     
     def __init__(self, config: PipelineConfig):
         """Initialize S3 client."""
+        if not BOTO3_AVAILABLE:
+            raise ImportError("boto3 is required for S3Client. Install with: pip install boto3")
+        
         self.config = config
         self.minio_user = config.get_env("MINIO_USER")
         self.minio_password = config.get_env("MINIO_PASSWORD")
@@ -162,50 +165,84 @@ class Logger:
         self.logger.debug(message, extra=kwargs)
 
 
-class PerformanceMonitor:
-    """Monitor pipeline performance and resource usage."""
-    
-    def __init__(self, config: PipelineConfig):
-        """Initialize performance monitor."""
-        self.config = config
-        self.enabled = config.get("monitoring.enabled", True)
-        self.start_time = None
-        self.start_memory = None
-        self.start_disk = None
-    
-    def start(self):
-        """Start monitoring."""
-        if not self.enabled:
-            return
-        
-        self.start_time = time.time()
+class ImageUtils:
+    """Utilities for image processing shared across processors."""
+
+    @staticmethod
+    def check_cv2() -> bool:
         try:
-            self.start_memory = psutil.virtual_memory().used
-            self.start_disk = psutil.disk_usage('.').used
-        except:
-            self.start_memory = 0
-            self.start_disk = 0
-    
-    def stop(self) -> Dict[str, Any]:
-        """Stop monitoring and return metrics."""
-        if not self.enabled or self.start_time is None:
-            return {}
-        
-        end_time = time.time()
+            import cv2  # noqa: F401
+            return True
+        except ImportError:
+            return False
+
+    @staticmethod
+    def check_imagehash() -> bool:
         try:
-            end_memory = psutil.virtual_memory().used
-            end_disk = psutil.disk_usage('.').used
-        except:
-            end_memory = 0
-            end_disk = 0
+            import imagehash  # noqa: F401
+            return True
+        except ImportError:
+            return False
+
+    @staticmethod
+    def compute_metrics(img) -> Dict[str, Any]:
+        if not PIL_AVAILABLE:
+            raise ImportError("PIL is required for ImageUtils. Install with: pip install Pillow")
         
-        return {
-            "execution_time": end_time - self.start_time,
-            "memory_usage": end_memory - self.start_memory,
-            "disk_usage": end_disk - self.start_disk,
-            "peak_memory": psutil.virtual_memory().percent if hasattr(psutil, 'virtual_memory') else 0,
-            "cpu_percent": psutil.cpu_percent() if hasattr(psutil, 'cpu_percent') else 0
-        }
+        w, h = img.size
+        aspect = (w / h) if h else 0
+        metrics = {"w": w, "h": h, "aspect": float(aspect)}
+
+        if ImageUtils.check_cv2():
+            import cv2
+            gray = cv2.cvtColor(np.array(img.convert("RGB")), cv2.COLOR_RGB2GRAY)
+            metrics["blur_varlap"] = float(cv2.Laplacian(gray, cv2.CV_64F).var())
+
+        return metrics
+
+    @staticmethod
+    def normalize_image(
+        img,
+        target_size: tuple[int, int] = (512, 512),
+        target_mode: str = "RGB",
+        target_format: str = "JPEG",
+        target_quality: int = 90,
+    ) -> bytes:
+        if not PIL_AVAILABLE:
+            raise ImportError("PIL is required for ImageUtils. Install with: pip install Pillow")
+        
+        img_rgb = img.convert(target_mode)
+        img_fit = ImageOps.pad(
+            img_rgb, target_size,
+            method=Image.BICUBIC,
+            color=None,
+            centering=(0.5, 0.5)
+        )
+        buf = io.BytesIO()
+        img_fit.save(buf, format=target_format, quality=target_quality, optimize=True)
+        return buf.getvalue()
+
+    @staticmethod
+    def extract_recipe_id_from_key(key: str) -> str:
+        name = PurePosixPath(key).name
+        m = re.search(r"__([A-Za-z0-9_\-]+)_(\d+)\.", name)
+        return m.group(1) if m else name
+
+
+class KeyUtils:
+    """Utilities for generating deterministic object keys."""
+
+    @staticmethod
+    def make_minio_key(path: str) -> str:
+        p = PurePosixPath(path)
+        h = hashlib.sha256(str(p).encode("utf-8")).hexdigest()[:16]
+        return f"{h}__{p.name or 'file'}"
+
+    @staticmethod
+    def make_minio_key_image(prefix: str, recipe_id: str, index: int, ext: str) -> str:
+        base_name = f"{recipe_id}_{index}.{ext or 'bin'}"
+        h = hashlib.sha256(f"{recipe_id}:{index}".encode("utf-8")).hexdigest()[:32]
+        return f"{prefix}/{h}__{base_name}"
 
 
 def utc_timestamp() -> str:
@@ -215,7 +252,6 @@ def utc_timestamp() -> str:
 
 def to_builtin(obj: Any) -> Any:
     """Convert Decimal objects to built-in Python types."""
-    from decimal import Decimal
     if isinstance(obj, Decimal):
         return int(obj) if obj == obj.to_integral_value() else float(obj)
     if isinstance(obj, dict):
@@ -227,7 +263,6 @@ def to_builtin(obj: Any) -> Any:
 
 def sanitize_filename(filename: str) -> str:
     """Sanitize filename for safe storage."""
-    import re
     return re.sub(r"[^\w\-.]+", "_", filename)
 
 
@@ -247,23 +282,3 @@ def error_handler(logger: Logger, operation: str):
     except Exception as e:
         logger.error(f"Error in {operation}: {str(e)}")
         raise
-
-
-def validate_config(config: PipelineConfig) -> List[str]:
-    """Validate configuration and return list of issues."""
-    issues = []
-    
-    # Check required environment variables
-    required_env_vars = ["MINIO_USER", "MINIO_PASSWORD", "MINIO_ENDPOINT"]
-    for var in required_env_vars:
-        if not config.get_env(var):
-            issues.append(f"Missing required environment variable: {var}")
-    
-    # Check configuration values
-    if config.get("pipeline.batch_size", 0) <= 0:
-        issues.append("Pipeline batch size must be positive")
-    
-    if config.get("pipeline.timeout", 0) <= 0:
-        issues.append("Pipeline timeout must be positive")
-    
-    return issues

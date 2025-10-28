@@ -9,56 +9,22 @@ import time
 from typing import Dict, Any, List, Optional
 from pathlib import Path
 
-# Import configuration and utilities directly to avoid dependency issues
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
-import config
-PipelineConfig = config.PipelineConfig
+# Add the parent directory to sys.path so we can import 'app' modules
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-# Simple implementations for missing utilities
-class Logger:
-    def __init__(self, name: str, level: str = "INFO"):
-        self.name = name
-        self.level = level
-    
-    def info(self, message: str):
-        print(f"[INFO] {self.name}: {message}")
-    
-    def warning(self, message: str):
-        print(f"[WARNING] {self.name}: {message}")
-    
-    def error(self, message: str):
-        print(f"[ERROR] {self.name}: {message}")
-    
-    def debug(self, message: str):
-        print(f"[DEBUG] {self.name}: {message}")
+# Import configuration and utilities
+from app.utils.config import validate_config, PipelineConfig
+from app.utils.monitoring import PipelineMonitor, ResourceMonitor, create_monitoring_report
+from app.utils.shared import Logger
 
-class PerformanceMonitor:
-    def __init__(self, config):
-        self.config = config
-    
-    def start(self):
-        pass
-    
-    def stop(self):
-        return {}
-
-def validate_config(config):
-    return []
-# Import real zone processors
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'zones'))
-
-# Import each zone processor
-from temporal_landing import TemporalLandingProcessor
-from persistent_landing import PersistentLandingProcessor
-from formatted_documents import FormattedDocumentsProcessor
-from formatted_images import FormattedImagesProcessor
-from trusted_images import TrustedImagesProcessor
-from trusted_documents import TrustedDocumentsProcessor
-from exploitation_documents import ExploitationDocumentsProcessor
+# Import each zone processor from their respective zone folders
+from app.zones.landing_zone.temporal_landing import TemporalLandingProcessor
+from app.zones.landing_zone.persistent_landing import PersistentLandingProcessor
+from app.zones.formatted_zone.formatted_documents import FormattedDocumentsProcessor
+from app.zones.formatted_zone.formatted_images import FormattedImagesProcessor
+from app.zones.trusted_zone.trusted_images import TrustedImagesProcessor
+from app.zones.trusted_zone.trusted_documents import TrustedDocumentsProcessor
+from app.zones.exploitation_zone.exploitation_documents import ExploitationDocumentsProcessor
 
 
 class PipelineOrchestrator:
@@ -68,7 +34,8 @@ class PipelineOrchestrator:
         """Initialize the orchestrator."""
         self.config = config
         self.logger = Logger("orchestrator", config.get("monitoring.log_level", "INFO"))
-        self.monitor = PerformanceMonitor(config)
+        self.monitor = PipelineMonitor(config)
+        self.resource_monitor = ResourceMonitor(config)
         
         # Pipeline stages
         self.stages = [
@@ -100,6 +67,8 @@ class PipelineOrchestrator:
         """Run a single pipeline stage."""
         self.logger.info(f"[STARTING] Starting stage: {stage_name}")
         
+        # Start stage monitoring
+        self.monitor.record_stage_start(stage_name)
         stage_start_time = time.time()
         
         try:
@@ -108,6 +77,9 @@ class PipelineOrchestrator:
             
             stage_duration = time.time() - stage_start_time
             result["stage_duration"] = stage_duration
+            
+            # Record successful stage end
+            self.monitor.record_stage_end(stage_name, result)
             
             self.logger.info(f"[SUCCESS] Stage {stage_name} completed successfully in {stage_duration:.2f}s")
             return result
@@ -122,6 +94,9 @@ class PipelineOrchestrator:
             }
             self.errors.append(error_info)
             
+            # Record error
+            self.monitor.record_error(stage_name, str(e))
+            
             self.logger.error(f"[ERROR] Stage {stage_name} failed after {stage_duration:.2f}s: {e}")
             raise
     
@@ -129,6 +104,10 @@ class PipelineOrchestrator:
         """Run the complete pipeline or specified stages."""
         import time
         pipeline_start_time = time.time()
+        
+        # Start monitoring
+        self.monitor.start_monitoring()
+        self.resource_monitor.start_monitoring()
         
         # Validate environment
         issues = self.validate_environment()
@@ -152,12 +131,17 @@ class PipelineOrchestrator:
             pipeline_end_time = time.time()
             total_execution_time = pipeline_end_time - pipeline_start_time
             
+            # Stop monitoring and get metrics
+            monitor_metrics = self.monitor.stop_monitoring()
+            self.resource_monitor.stop_monitoring()
+            
             # Generate final report
             final_metrics = {
                 "stages_completed": len(self.results),
                 "stages_failed": len(self.errors),
                 "total_stages": len(stages_to_run),
                 "execution_time": total_execution_time,
+                "monitoring_metrics": monitor_metrics,
                 "results": self.results,
                 "errors": self.errors
             }
@@ -165,18 +149,31 @@ class PipelineOrchestrator:
             self.logger.info(f"[SUCCESS] Pipeline completed successfully!")
             self.logger.info(f"[METRICS] Final metrics: {final_metrics}")
             
+            # Generate and save monitoring report
+            if self.config.get("monitoring.enabled", True):
+                report = create_monitoring_report(self.monitor, self.resource_monitor)
+                self.logger.info(f"[REPORT] Monitoring report generated")
+                
+                # Save metrics to file
+                metrics_file = self.monitor.save_metrics()
+                if metrics_file:
+                    self.logger.info(f"[METRICS] Metrics saved to: {metrics_file}")
+            
             return final_metrics
         
         except Exception as e:
-            final_metrics = self.monitor.stop()
-            final_metrics.update({
+            # Stop monitoring on error
+            self.monitor.stop_monitoring()
+            self.resource_monitor.stop_monitoring()
+            
+            final_metrics = {
                 "stages_completed": len(self.results),
                 "stages_failed": len(self.errors),
                 "total_stages": len(stages_to_run),
                 "results": self.results,
                 "errors": self.errors,
                 "pipeline_error": str(e)
-            })
+            }
             
             self.logger.error(f"[ERROR] Pipeline failed: {e}")
             return final_metrics
@@ -207,7 +204,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description="Data Pipeline Orchestrator")
-    parser.add_argument("--config", default="app/config/pipeline.yaml", help="Configuration file path")
+    parser.add_argument("--config", default="app/pipeline.yaml", help="Configuration file path")
     parser.add_argument("--stages", nargs="+", help="Specific stages to run")
     parser.add_argument("--stage", help="Single stage to run")
     parser.add_argument("--dry-run", action="store_true", help="Run in dry-run mode")

@@ -1,0 +1,540 @@
+************* Module app
+app\__init__.py:4:0: C0301: Line too long (116/100) (line-too-long)
+************* Module app.cli
+app\cli.py:328:0: C0301: Line too long (109/100) (line-too-long)
+app\cli.py:21:0: E0401: Unable to import 'config' (import-error)
+app\cli.py:21:0: C0413: Import "import config" should be placed at the top of the module (wrong-import-position)
+app\cli.py:37:4: W0621: Redefining name 'config' from outer scope (line 21) (redefined-outer-name)
+app\cli.py:63:11: W0718: Catching too general exception Exception (broad-exception-caught)
+app\cli.py:60:17: W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)
+app\cli.py:72:8: W0621: Redefining name 'config' from outer scope (line 21) (redefined-outer-name)
+app\cli.py:107:11: W0718: Catching too general exception Exception (broad-exception-caught)
+app\cli.py:116:8: W0621: Redefining name 'config' from outer scope (line 21) (redefined-outer-name)
+app\cli.py:167:11: W0718: Catching too general exception Exception (broad-exception-caught)
+app\cli.py:149:15: W0718: Catching too general exception Exception (broad-exception-caught)
+app\cli.py:113:0: R0912: Too many branches (15/12) (too-many-branches)
+app\cli.py:212:11: W0718: Catching too general exception Exception (broad-exception-caught)
+app\cli.py:180:12: C0415: Import outside toplevel (pytest) (import-outside-toplevel)
+app\cli.py:189:17: W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)
+app\cli.py:201:17: W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)
+app\cli.py:180:12: W0611: Unused import pytest (unused-import)
+app\cli.py:221:8: W0621: Redefining name 'os' from outer scope (line 7) (redefined-outer-name)
+app\cli.py:222:8: W0621: Redefining name 'sys' from outer scope (line 11) (redefined-outer-name)
+app\cli.py:248:11: W0718: Catching too general exception Exception (broad-exception-caught)
+app\cli.py:221:8: W0404: Reimport 'os' (imported line 7) (reimported)
+app\cli.py:221:8: C0415: Import outside toplevel (os) (import-outside-toplevel)
+app\cli.py:222:8: W0404: Reimport 'sys' (imported line 11) (reimported)
+app\cli.py:222:8: C0415: Import outside toplevel (sys) (import-outside-toplevel)
+app\cli.py:225:8: E0401: Unable to import 'monitoring' (import-error)
+app\cli.py:225:8: C0415: Import outside toplevel (monitoring.get_system_info, monitoring.utc_timestamp) (import-outside-toplevel)
+app\cli.py:253:0: R0914: Too many local variables (20/15) (too-many-locals)
+app\cli.py:258:8: W0621: Redefining name 'os' from outer scope (line 7) (redefined-outer-name)
+app\cli.py:259:8: W0621: Redefining name 'sys' from outer scope (line 11) (redefined-outer-name)
+app\cli.py:298:16: W0621: Redefining name 'status' from outer scope (line 69) (redefined-outer-name)
+app\cli.py:312:11: W0718: Catching too general exception Exception (broad-exception-caught)
+app\cli.py:256:8: C0415: Import outside toplevel (glob) (import-outside-toplevel)
+app\cli.py:257:8: C0415: Import outside toplevel (json) (import-outside-toplevel)
+app\cli.py:258:8: W0404: Reimport 'os' (imported line 7) (reimported)
+app\cli.py:258:8: C0415: Import outside toplevel (os) (import-outside-toplevel)
+app\cli.py:259:8: W0404: Reimport 'sys' (imported line 11) (reimported)
+app\cli.py:259:8: C0415: Import outside toplevel (sys) (import-outside-toplevel)
+app\cli.py:262:8: E0401: Unable to import 'monitoring' (import-error)
+app\cli.py:262:8: C0415: Import outside toplevel (monitoring.create_monitoring_report) (import-outside-toplevel)
+app\cli.py:274:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+app\cli.py:293:26: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\cli.py:262:8: W0611: Unused create_monitoring_report imported from monitoring (unused-import)
+app\cli.py:353:11: W0718: Catching too general exception Exception (broad-exception-caught)
+app\cli.py:13:0: W0611: Unused List imported from typing (unused-import)
+************* Module app.orchestrate
+app\orchestrate.py:16:0: C0413: Import "from app.utils.config import PipelineConfig, validate_config" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:17:0: C0413: Import "from app.utils.monitoring import PipelineMonitor, ResourceMonitor, create_monitoring_report" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:18:0: C0413: Import "from app.utils.shared import Logger" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:19:0: C0413: Import "from app.zones.exploitation_zone.exploitation_documents import ExploitationDocumentsProcessor" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:20:0: C0413: Import "from app.zones.exploitation_zone.exploitation_images import ExploitationImagesProcessor" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:21:0: C0413: Import "from app.zones.formatted_zone.formatted_documents import FormattedDocumentsProcessor" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:22:0: C0413: Import "from app.zones.formatted_zone.formatted_images import FormattedImagesProcessor" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:23:0: C0413: Import "from app.zones.landing_zone.persistent_landing import PersistentLandingProcessor" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:26:0: C0413: Import "from app.zones.landing_zone.temporal_landing import TemporalLandingProcessor" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:27:0: C0413: Import "from app.zones.trusted_zone.trusted_documents import TrustedDocumentsProcessor" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:28:0: C0413: Import "from app.zones.trusted_zone.trusted_images import TrustedImagesProcessor" should be placed at the top of the module (wrong-import-position)
+app\orchestrate.py:107:4: R0914: Too many local variables (16/15) (too-many-locals)
+app\orchestrate.py:109:8: W0621: Redefining name 'time' from outer scope (line 8) (redefined-outer-name)
+app\orchestrate.py:109:8: W0404: Reimport 'time' (imported line 8) (reimported)
+app\orchestrate.py:109:8: C0415: Import outside toplevel (time) (import-outside-toplevel)
+app\orchestrate.py:169:15: W0718: Catching too general exception Exception (broad-exception-caught)
+app\orchestrate.py:154:29: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\orchestrate.py:160:33: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\orchestrate.py:159:16: W0612: Unused variable 'report' (unused-variable)
+app\orchestrate.py:209:4: C0415: Import outside toplevel (argparse) (import-outside-toplevel)
+app\orchestrate.py:225:8: W0212: Access to a protected member _config of a client class (protected-access)
+app\orchestrate.py:228:8: W0212: Access to a protected member _config of a client class (protected-access)
+app\orchestrate.py:262:11: W0718: Catching too general exception Exception (broad-exception-caught)
+************* Module app.tests.integration.test_pipeline
+app\tests\integration\test_pipeline.py:18:0: E0401: Unable to import 'utils.config' (import-error)
+app\tests\integration\test_pipeline.py:18:0: C0413: Import "from utils.config import PipelineConfig" should be placed at the top of the module (wrong-import-position)
+app\tests\integration\test_pipeline.py:22:0: E0401: Unable to import 'exploitation_documents' (import-error)
+app\tests\integration\test_pipeline.py:22:0: C0413: Import "from exploitation_documents import ExploitationDocumentsProcessor" should be placed at the top of the module (wrong-import-position)
+app\tests\integration\test_pipeline.py:23:0: E0401: Unable to import 'formatted_documents' (import-error)
+app\tests\integration\test_pipeline.py:23:0: C0413: Import "from formatted_documents import FormattedDocumentsProcessor" should be placed at the top of the module (wrong-import-position)
+app\tests\integration\test_pipeline.py:24:0: E0401: Unable to import 'formatted_images' (import-error)
+app\tests\integration\test_pipeline.py:24:0: C0413: Import "from formatted_images import FormattedImagesProcessor" should be placed at the top of the module (wrong-import-position)
+app\tests\integration\test_pipeline.py:25:0: E0401: Unable to import 'persistent_landing' (import-error)
+app\tests\integration\test_pipeline.py:25:0: C0413: Import "from persistent_landing import PersistentLandingProcessor" should be placed at the top of the module (wrong-import-position)
+app\tests\integration\test_pipeline.py:26:0: E0401: Unable to import 'temporal_landing' (import-error)
+app\tests\integration\test_pipeline.py:26:0: C0413: Import "from temporal_landing import TemporalLandingProcessor" should be placed at the top of the module (wrong-import-position)
+app\tests\integration\test_pipeline.py:27:0: E0401: Unable to import 'trusted_documents' (import-error)
+app\tests\integration\test_pipeline.py:27:0: C0413: Import "from trusted_documents import TrustedDocumentsProcessor" should be placed at the top of the module (wrong-import-position)
+app\tests\integration\test_pipeline.py:28:0: E0401: Unable to import 'trusted_images' (import-error)
+app\tests\integration\test_pipeline.py:28:0: C0413: Import "from trusted_images import TrustedImagesProcessor" should be placed at the top of the module (wrong-import-position)
+app\tests\integration\test_pipeline.py:128:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+app\tests\integration\test_pipeline.py:300:23: W0718: Catching too general exception Exception (broad-exception-caught)
+app\tests\integration\test_pipeline.py:432:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+app\tests\integration\test_pipeline.py:7:0: W0611: Unused import json (unused-import)
+app\tests\integration\test_pipeline.py:12:0: W0611: Unused Path imported from pathlib (unused-import)
+app\tests\integration\test_pipeline.py:13:0: W0611: Unused MagicMock imported from unittest.mock (unused-import)
+************* Module app.tests.integration.test_simple_integration
+app\tests\integration\test_simple_integration.py:18:0: E0401: Unable to import 'utils.config' (import-error)
+app\tests\integration\test_simple_integration.py:18:0: C0413: Import "from utils.config import PipelineConfig" should be placed at the top of the module (wrong-import-position)
+app\tests\integration\test_simple_integration.py:52:8: C0415: Import outside toplevel (yaml) (import-outside-toplevel)
+app\tests\integration\test_simple_integration.py:54:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+app\tests\integration\test_simple_integration.py:59:8: C0415: Import outside toplevel (shutil) (import-outside-toplevel)
+app\tests\integration\test_simple_integration.py:103:8: W0612: Unused variable 'config' (unused-variable)
+app\tests\integration\test_simple_integration.py:112:8: E0401: Unable to import 'zones.shared_utils' (import-error)
+app\tests\integration\test_simple_integration.py:112:8: C0415: Import outside toplevel (zones.shared_utils.sanitize_filename, zones.shared_utils.utc_timestamp) (import-outside-toplevel)
+app\tests\integration\test_simple_integration.py:12:0: W0611: Unused Path imported from pathlib (unused-import)
+app\tests\integration\test_simple_integration.py:13:0: W0611: Unused MagicMock imported from unittest.mock (unused-import)
+************* Module app.tests.unit.test_utils
+app\tests\unit\test_utils.py:11:0: E0611: No name 'PerformanceMonitor' in module 'app.utils' (no-name-in-module)
+app\tests\unit\test_utils.py:51:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+app\tests\unit\test_utils.py:103:8: C0415: Import outside toplevel (decimal.Decimal) (import-outside-toplevel)
+app\tests\unit\test_utils.py:117:8: C0415: Import outside toplevel (decimal.Decimal) (import-outside-toplevel)
+app\tests\unit\test_utils.py:136:8: C0415: Import outside toplevel (decimal.Decimal) (import-outside-toplevel)
+app\tests\unit\test_utils.py:171:17: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+app\tests\unit\test_utils.py:175:12: C0415: Import outside toplevel (json) (import-outside-toplevel)
+app\tests\unit\test_utils.py:212:8: W0212: Access to a protected member _config of a client class (protected-access)
+app\tests\unit\test_utils.py:234:8: W0212: Access to a protected member _config of a client class (protected-access)
+app\tests\unit\test_utils.py:240:8: C0415: Import outside toplevel (time) (import-outside-toplevel)
+app\tests\unit\test_utils.py:8:0: W0611: Unused Path imported from pathlib (unused-import)
+app\tests\unit\test_utils.py:9:0: W0611: Unused MagicMock imported from unittest.mock (unused-import)
+app\tests\unit\test_utils.py:11:0: W0611: Unused S3Client imported from app.utils (unused-import)
+************* Module app.utils.config
+app\utils\config.py:48:15: W0718: Catching too general exception Exception (broad-exception-caught)
+app\utils\config.py:42:19: W0718: Catching too general exception Exception (broad-exception-caught)
+app\utils\config.py:28:16: C0415: Import outside toplevel (yaml) (import-outside-toplevel)
+app\utils\config.py:40:20: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+app\utils\config.py:40:36: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\utils\config.py:43:16: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+app\utils\config.py:46:12: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+app\utils\config.py:49:12: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+app\utils\config.py:56:8: W0107: Unnecessary pass statement (unnecessary-pass)
+app\utils\config.py:11:0: W0611: Unused Optional imported from typing (unused-import)
+************* Module app.utils.monitoring
+app\utils\monitoring.py:23:8: C0415: Import outside toplevel (psutil) (import-outside-toplevel)
+app\utils\monitoring.py:55:0: R0902: Too many instance attributes (10/7) (too-many-instance-attributes)
+app\utils\monitoring.py:58:23: W0621: Redefining name 'config' from outer scope (line 409) (redefined-outer-name)
+app\utils\monitoring.py:237:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+app\utils\monitoring.py:254:12: W0612: Unused variable 'stage_name' (unused-variable)
+app\utils\monitoring.py:283:23: W0621: Redefining name 'config' from outer scope (line 409) (redefined-outer-name)
+app\utils\monitoring.py:367:29: W0621: Redefining name 'monitor' from outer scope (line 410) (redefined-outer-name)
+app\utils\monitoring.py:367:55: W0621: Redefining name 'resource_monitor' from outer scope (line 411) (redefined-outer-name)
+app\utils\monitoring.py:372:4: W0621: Redefining name 'report' from outer scope (line 430) (redefined-outer-name)
+app\utils\monitoring.py:11:0: W0611: Unused timezone imported from datetime (unused-import)
+app\utils\monitoring.py:12:0: W0611: Unused Path imported from pathlib (unused-import)
+************* Module app.utils.shared
+app\utils\shared.py:97:4: R0913: Too many arguments (7/5) (too-many-arguments)
+app\utils\shared.py:97:4: R0917: Too many positional arguments (7/5) (too-many-positional-arguments)
+app\utils\shared.py:122:4: R0913: Too many arguments (6/5) (too-many-arguments)
+app\utils\shared.py:122:4: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+app\utils\shared.py:180:4: C0116: Missing function or method docstring (missing-function-docstring)
+app\utils\shared.py:182:12: C0415: Import outside toplevel (cv2) (import-outside-toplevel)
+app\utils\shared.py:182:12: W0611: Unused import cv2 (unused-import)
+app\utils\shared.py:189:4: C0116: Missing function or method docstring (missing-function-docstring)
+app\utils\shared.py:191:12: C0415: Import outside toplevel (imagehash) (import-outside-toplevel)
+app\utils\shared.py:191:12: W0611: Unused import imagehash (unused-import)
+app\utils\shared.py:198:4: C0116: Missing function or method docstring (missing-function-docstring)
+app\utils\shared.py:207:12: C0415: Import outside toplevel (cv2) (import-outside-toplevel)
+app\utils\shared.py:209:19: E1101: Module 'cv2' has no 'cvtColor' member (no-member)
+app\utils\shared.py:209:62: E1101: Module 'cv2' has no 'COLOR_RGB2GRAY' member (no-member)
+app\utils\shared.py:210:43: E1101: Module 'cv2' has no 'Laplacian' member (no-member)
+app\utils\shared.py:210:63: E1101: Module 'cv2' has no 'CV_64F' member (no-member)
+app\utils\shared.py:215:4: C0116: Missing function or method docstring (missing-function-docstring)
+app\utils\shared.py:227:41: E1101: Module 'PIL.Image' has no 'BICUBIC' member (no-member)
+app\utils\shared.py:234:4: C0116: Missing function or method docstring (missing-function-docstring)
+app\utils\shared.py:244:4: C0116: Missing function or method docstring (missing-function-docstring)
+app\utils\shared.py:250:4: C0116: Missing function or method docstring (missing-function-docstring)
+app\utils\shared.py:13:0: W0611: Unused import time (unused-import)
+app\utils\shared.py:17:0: W0611: Unused Path imported from pathlib (unused-import)
+app\utils\shared.py:39:4: W0611: Unused import psutil (unused-import)
+************* Module app.zones.exploitation_zone.exploitation_documents
+app\zones\exploitation_zone\exploitation_documents.py:21:0: R0902: Too many instance attributes (13/7) (too-many-instance-attributes)
+app\zones\exploitation_zone\exploitation_documents.py:166:4: R0914: Too many local variables (17/15) (too-many-locals)
+app\zones\exploitation_zone\exploitation_documents.py:211:23: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\exploitation_zone\exploitation_documents.py:239:15: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\exploitation_zone\exploitation_documents.py:251:16: W0612: Unused variable 'query_results' (unused-variable)
+app\zones\exploitation_zone\exploitation_documents.py:275:14: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\zones\exploitation_zone\exploitation_documents.py:10:0: W0611: Unused import os (unused-import)
+app\zones\exploitation_zone\exploitation_documents.py:13:0: W0611: Unused import chromadb (unused-import)
+************* Module app.zones.exploitation_zone.exploitation_images
+app\zones\exploitation_zone\exploitation_images.py:22:0: R0902: Too many instance attributes (13/7) (too-many-instance-attributes)
+app\zones\exploitation_zone\exploitation_images.py:87:15: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\exploitation_zone\exploitation_images.py:97:4: R0914: Too many local variables (16/15) (too-many-locals)
+app\zones\exploitation_zone\exploitation_images.py:139:19: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\exploitation_zone\exploitation_images.py:165:15: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\exploitation_zone\exploitation_images.py:177:16: W0612: Unused variable 'query_results' (unused-variable)
+app\zones\exploitation_zone\exploitation_images.py:201:14: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\zones\exploitation_zone\exploitation_images.py:9:0: W0611: Unused import os (unused-import)
+app\zones\exploitation_zone\exploitation_images.py:10:0: W0611: Unused Iterable imported from typing (unused-import)
+app\zones\exploitation_zone\exploitation_images.py:10:0: W0611: Unused Optional imported from typing (unused-import)
+app\zones\exploitation_zone\exploitation_images.py:12:0: W0611: Unused import chromadb (unused-import)
+************* Module app.zones.formatted_zone.formatted_documents
+app\zones\formatted_zone\formatted_documents.py:147:0: C0301: Line too long (104/100) (line-too-long)
+app\zones\formatted_zone\formatted_documents.py:168:0: C0301: Line too long (105/100) (line-too-long)
+app\zones\formatted_zone\formatted_documents.py:29:0: R0902: Too many instance attributes (11/7) (too-many-instance-attributes)
+app\zones\formatted_zone\formatted_documents.py:97:15: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\formatted_zone\formatted_documents.py:136:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+app\zones\formatted_zone\formatted_documents.py:214:14: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\zones\formatted_zone\formatted_documents.py:11:0: W0611: Unused Decimal imported from decimal (unused-import)
+app\zones\formatted_zone\formatted_documents.py:13:0: W0611: Unused List imported from typing (unused-import)
+app\zones\formatted_zone\formatted_documents.py:15:0: W0611: Unused import boto3 (unused-import)
+************* Module app.zones.formatted_zone.formatted_images
+app\zones\formatted_zone\formatted_images.py:150:0: C0325: Unnecessary parens after 'not' keyword (superfluous-parens)
+app\zones\formatted_zone\formatted_images.py:26:0: R0902: Too many instance attributes (21/7) (too-many-instance-attributes)
+app\zones\formatted_zone\formatted_images.py:96:4: R0914: Too many local variables (27/15) (too-many-locals)
+app\zones\formatted_zone\formatted_images.py:137:31: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\formatted_zone\formatted_images.py:163:28: C0415: Import outside toplevel (imagehash) (import-outside-toplevel)
+app\zones\formatted_zone\formatted_images.py:214:35: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\formatted_zone\formatted_images.py:96:4: R0912: Too many branches (17/12) (too-many-branches)
+app\zones\formatted_zone\formatted_images.py:96:4: R0915: Too many statements (71/50) (too-many-statements)
+app\zones\formatted_zone\formatted_images.py:244:14: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\zones\formatted_zone\formatted_images.py:12:0: W0611: Unused import boto3 (unused-import)
+app\zones\formatted_zone\formatted_images.py:13:0: W0611: Unused ImageOps imported from PIL (unused-import)
+************* Module app.zones.landing_zone.persistent_landing
+app\zones\landing_zone\persistent_landing.py:222:0: C0301: Line too long (103/100) (line-too-long)
+app\zones\landing_zone\persistent_landing.py:28:0: R0902: Too many instance attributes (14/7) (too-many-instance-attributes)
+app\zones\landing_zone\persistent_landing.py:56:8: W0612: Unused variable 'name' (unused-variable)
+app\zones\landing_zone\persistent_landing.py:81:4: R0913: Too many arguments (7/5) (too-many-arguments)
+app\zones\landing_zone\persistent_landing.py:81:4: R0917: Too many positional arguments (7/5) (too-many-positional-arguments)
+app\zones\landing_zone\persistent_landing.py:89:4: R0913: Too many arguments (7/5) (too-many-arguments)
+app\zones\landing_zone\persistent_landing.py:89:4: R0917: Too many positional arguments (7/5) (too-many-positional-arguments)
+app\zones\landing_zone\persistent_landing.py:126:4: R0914: Too many local variables (17/15) (too-many-locals)
+app\zones\landing_zone\persistent_landing.py:238:14: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\zones\landing_zone\persistent_landing.py:9:0: W0611: Unused import os (unused-import)
+app\zones\landing_zone\persistent_landing.py:10:0: W0611: Unused import re (unused-import)
+app\zones\landing_zone\persistent_landing.py:12:0: W0611: Unused List imported from typing (unused-import)
+app\zones\landing_zone\persistent_landing.py:12:0: W0611: Unused Set imported from typing (unused-import)
+app\zones\landing_zone\persistent_landing.py:14:0: W0611: Unused import boto3 (unused-import)
+************* Module app.zones.landing_zone.temporal_landing
+app\zones\landing_zone\temporal_landing.py:165:0: C0301: Line too long (103/100) (line-too-long)
+app\zones\landing_zone\temporal_landing.py:31:0: R0902: Too many instance attributes (14/7) (too-many-instance-attributes)
+app\zones\landing_zone\temporal_landing.py:160:15: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\landing_zone\temporal_landing.py:164:4: R0914: Too many local variables (17/15) (too-many-locals)
+app\zones\landing_zone\temporal_landing.py:273:14: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\zones\landing_zone\temporal_landing.py:8:0: W0611: Unused import json (unused-import)
+app\zones\landing_zone\temporal_landing.py:10:0: W0611: Unused import os (unused-import)
+app\zones\landing_zone\temporal_landing.py:12:0: W0611: Unused List imported from typing (unused-import)
+************* Module app.zones.trusted_zone.trusted_documents
+app\zones\trusted_zone\trusted_documents.py:283:0: C0325: Unnecessary parens after 'not' keyword (superfluous-parens)
+app\zones\trusted_zone\trusted_documents.py:343:0: C0325: Unnecessary parens after 'not' keyword (superfluous-parens)
+app\zones\trusted_zone\trusted_documents.py:22:0: R0902: Too many instance attributes (22/7) (too-many-instance-attributes)
+app\zones\trusted_zone\trusted_documents.py:94:16: C0415: Import outside toplevel (nltk) (import-outside-toplevel)
+app\zones\trusted_zone\trusted_documents.py:100:16: C0415: Import outside toplevel (nltk.corpus.stopwords) (import-outside-toplevel)
+app\zones\trusted_zone\trusted_documents.py:127:15: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\trusted_zone\trusted_documents.py:197:19: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\trusted_zone\trusted_documents.py:241:16: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+app\zones\trusted_zone\trusted_documents.py:262:19: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\trusted_zone\trusted_documents.py:295:4: R0914: Too many local variables (23/15) (too-many-locals)
+app\zones\trusted_zone\trusted_documents.py:319:23: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\trusted_zone\trusted_documents.py:313:8: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
+app\zones\trusted_zone\trusted_documents.py:295:4: R0912: Too many branches (13/12) (too-many-branches)
+app\zones\trusted_zone\trusted_documents.py:295:4: R0915: Too many statements (56/50) (too-many-statements)
+app\zones\trusted_zone\trusted_documents.py:473:0: R0902: Too many instance attributes (9/7) (too-many-instance-attributes)
+app\zones\trusted_zone\trusted_documents.py:476:4: R0913: Too many arguments (6/5) (too-many-arguments)
+app\zones\trusted_zone\trusted_documents.py:476:4: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+app\zones\trusted_zone\trusted_documents.py:572:14: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\zones\trusted_zone\trusted_documents.py:12:0: W0611: Unused PurePosixPath imported from pathlib (unused-import)
+************* Module app.zones.trusted_zone.trusted_images
+app\zones\trusted_zone\trusted_images.py:187:0: C0325: Unnecessary parens after 'not' keyword (superfluous-parens)
+app\zones\trusted_zone\trusted_images.py:200:0: C0301: Line too long (107/100) (line-too-long)
+app\zones\trusted_zone\trusted_images.py:27:0: R0902: Too many instance attributes (23/7) (too-many-instance-attributes)
+app\zones\trusted_zone\trusted_images.py:100:4: R0914: Too many local variables (37/15) (too-many-locals)
+app\zones\trusted_zone\trusted_images.py:118:16: C0206: Consider iterating with .items() (consider-using-dict-items)
+app\zones\trusted_zone\trusted_images.py:134:40: R1721: Unnecessary use of a comprehension, use dict(id_to_imgkeys) instead. (unnecessary-comprehension)
+app\zones\trusted_zone\trusted_images.py:171:31: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\trusted_zone\trusted_images.py:207:28: C0415: Import outside toplevel (imagehash) (import-outside-toplevel)
+app\zones\trusted_zone\trusted_images.py:261:35: W0718: Catching too general exception Exception (broad-exception-caught)
+app\zones\trusted_zone\trusted_images.py:100:4: R0912: Too many branches (22/12) (too-many-branches)
+app\zones\trusted_zone\trusted_images.py:100:4: R0915: Too many statements (99/50) (too-many-statements)
+app\zones\trusted_zone\trusted_images.py:268:16: W0612: Unused variable 'report' (unused-variable)
+app\zones\trusted_zone\trusted_images.py:331:14: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+app\zones\trusted_zone\trusted_images.py:13:0: W0611: Unused import boto3 (unused-import)
+app\zones\trusted_zone\trusted_images.py:14:0: W0611: Unused ImageOps imported from PIL (unused-import)
+************* Module app.zones.trusted_zone.__init__
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[180:219]
+==app.zones.trusted_zone.trusted_images:[227:267]
+                        for src_key in keys:
+                            # Generate destination key
+                            base = PurePosixPath(src_key).name
+                            base_noext = base.rsplit(".", 1)[0]
+                            dst_key = f"{self.out_prefix}/{base_noext}.jpg"
+
+                            if (
+                                not self.overwrite
+                                and self.s3_client.head_object(self.out_bucket, dst_key) is not None
+                            ):
+                                self.logger.info(f"[SKIP] {dst_key} already exists")
+                                skipped += 1
+                                continue
+
+                            try:
+                                # Load and normalize image
+                                obj = self.s3_client.get_object(bucket=self.src_bucket, key=src_key)
+                                raw = obj["Body"].read()
+                                img = Image.open(io.BytesIO(raw))
+                                img.load()
+
+                                # Normalize
+                                out_bytes = self.normalize_image(img)
+
+                                # Write normalized image
+                                self.s3_client.put_object(
+                                    bucket=self.out_bucket,
+                                    key=dst_key,
+                                    body=out_bytes,
+                                    content_type="image/jpeg",
+                                )
+                                copied += 1
+
+                            except Exception as e:
+                                self.logger.warning(
+                                    f"Failed to process {src_key} -> {dst_key}: {e}"
+                                )
+                                skipped += 1
+ (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[40:61]
+==app.zones.trusted_zone.trusted_images:[42:63]
+        self.target_size = tuple(config.get("image_processing.target_size", [512, 512]))
+        self.target_mode = config.get("image_processing.target_mode", "RGB")
+        self.target_format = config.get("image_processing.target_format", "JPEG")
+        self.target_quality = config.get("image_processing.target_quality", 90)
+
+        # Quality thresholds
+        quality_config = config.get("image_processing.quality_thresholds", {})
+        self.min_width = quality_config.get("min_width", 128)
+        self.min_height = quality_config.get("min_height", 128)
+        self.min_aspect_ratio = quality_config.get("min_aspect_ratio", 0.5)
+        self.max_aspect_ratio = quality_config.get("max_aspect_ratio", 3.0)
+        self.blur_varlap_min = quality_config.get("blur_varlap_min", 50.0)
+
+        # Deduplication
+        self.deduplication_enabled = config.get("image_processing.deduplication.enabled", True)
+
+        # Behavior flags
+        self.dry_run = config.get("pipeline.dry_run", False)
+        self.overwrite = config.get("pipeline.overwrite", True)
+
+        # Output file for documents processing - save in configured path (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[75:98]
+==app.zones.trusted_zone.trusted_images:[79:102]
+                    yield key
+
+    def compute_metrics(self, img: Image.Image) -> Dict[str, Any]:
+        """Compute image quality metrics."""
+        return ImageUtils.compute_metrics(img)
+
+    def normalize_image(self, img: Image.Image) -> bytes:
+        """Normalize image to target format."""
+        return ImageUtils.normalize_image(
+            img,
+            target_size=self.target_size,
+            target_mode=self.target_mode,
+            target_format=self.target_format,
+            target_quality=self.target_quality,
+        )
+
+    def extract_recipe_id_from_key(self, key: str) -> str:
+        """Extract recipe ID from image key."""
+        return ImageUtils.extract_recipe_id_from_key(key)
+
+    def process(self) -> Dict[str, Any]:
+        """Main processing method."""
+        try: (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[109:119]
+==app.zones.trusted_zone.trusted_images:[142:152]
+                quality_stats = {
+                    "evaluated": 0,
+                    "kept": 0,
+                    "corrupted": 0,
+                    "too_small": 0,
+                    "bad_aspect": 0,
+                    "too_blurry": 0,
+                    "dupes_removed": 0,
+                }
+ (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[127:138]
+==app.zones.trusted_zone.trusted_images:[161:172]
+                    for src_key in keys:
+                        quality_stats["evaluated"] += 1
+
+                        try:
+                            # Load original image
+                            obj = self.s3_client.get_object(bucket=self.src_bucket, key=src_key)
+                            raw = obj["Body"].read()
+                            img = Image.open(io.BytesIO(raw))
+                            img.load()
+                        except Exception as e:
+                            quality_stats["corrupted"] += 1 (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[222:232]
+==app.zones.trusted_zone.trusted_images:[309:319]
+                    "quality_stats": quality_stats,
+                    "images_copied": copied,
+                    "images_skipped": skipped,
+                    "timestamp": utc_timestamp(),
+                }
+
+                self.logger.info(f"[STATS] Images copied: {copied}, skipped: {skipped}")
+                return result
+
+        except Exception as e: (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.tests.integration.test_pipeline:[44:53]
+==app.tests.unit.test_utils:[37:46]
+  timeout: 30
+
+storage:
+  buckets:
+    landing_zone: "test-landing-zone"
+    formatted_zone: "test-formatted-zone"
+    trusted_zone: "test-trusted-zone"
+    exploitation_zone: "test-exploitation-zone"
+ (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.exploitation_zone.exploitation_documents:[250:259]
+==app.zones.exploitation_zone.exploitation_images:[176:185]
+                query_results = self.test_query()
+
+                result = {
+                    **ingestion_stats,
+                    "timestamp": utc_timestamp(),
+                    "collection_name": self.collection_name,
+                    "embedding_model": self.embedding_model,
+                }
+ (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.tests.integration.test_pipeline:[367:374]
+==app.tests.unit.test_utils:[39:46]
+storage:
+  buckets:
+    landing_zone: "test-landing-zone"
+    formatted_zone: "test-formatted-zone"
+    trusted_zone: "test-trusted-zone"
+    exploitation_zone: "test-exploitation-zone"
+ (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.tests.integration.test_pipeline:[284:290]
+==app.tests.unit.test_utils:[275:281]
+            with patch.dict(
+                os.environ,
+                {
+                    "MINIO_USER": "test_user",
+                    "MINIO_PASSWORD": "test_password",
+                    "MINIO_ENDPOINT": "http://localhost:9000", (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.exploitation_zone.exploitation_documents:[64:70]
+==app.zones.exploitation_zone.exploitation_images:[66:72]
+        paginator = self.s3_client.client.get_paginator("list_objects_v2")
+        for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+            for obj in page.get("Contents", []):
+                k = obj["Key"]
+                if k.lower().endswith(exts):
+                    keys.append(k) (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_documents:[51:57]
+==app.zones.formatted_zone.formatted_images:[66:72]
+        paginator = self.s3_client.client.get_paginator("list_objects_v2")
+        for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+            for obj in page.get("Contents", []):
+                key = obj["Key"]
+                if key.endswith("/"):
+                    continue (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[61:70]
+==app.zones.trusted_zone.trusted_images:[69:78]
+        self.cv2_available = ImageUtils.check_cv2()
+        self.imagehash_available = ImageUtils.check_imagehash()
+
+    def list_images(self, bucket: str, prefix: str) -> Iterable[str]:
+        """List image files in bucket with prefix."""
+        paginator = self.s3_client.client.get_paginator("list_objects_v2")
+        for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+            for obj in page.get("Contents", []):
+                key = obj["Key"] (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.tests.integration.test_pipeline:[35:42]
+==app.tests.unit.test_utils:[28:35]
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_file = os.path.join(self.temp_dir, "test_config.yaml")
+
+        # Create a test config file
+        test_config = """
+pipeline:
+  dry_run: true (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.exploitation_zone.exploitation_documents:[237:245]
+==app.zones.exploitation_zone.exploitation_images:[163:171]
+            return res
+        except Exception as e:
+            self.logger.error(f"Query failed: {e}")
+            return {}
+
+    def process(self) -> Dict[str, Any]:
+        """Main processing method."""
+        try: (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[130:136]
+==app.zones.trusted_zone.trusted_images:[241:249]
+                        try:
+                            # Load original image
+                            obj = self.s3_client.get_object(bucket=self.src_bucket, key=src_key)
+                            raw = obj["Body"].read()
+                            img = Image.open(io.BytesIO(raw))
+                            img.load() (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[194:202]
+==app.zones.trusted_zone.trusted_images:[164:170]
+                        try:
+                            # Load original image
+                            obj = self.s3_client.get_object(bucket=self.src_bucket, key=src_key)
+                            raw = obj["Body"].read()
+                            img = Image.open(io.BytesIO(raw))
+                            img.load() (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[139:147]
+==app.zones.trusted_zone.trusted_images:[175:183]
+                            continue
+
+                        # Basic quality checks
+                        metrics = self.compute_metrics(img)
+                        w, h, aspect = metrics["w"], metrics["h"], metrics["aspect"]
+
+                        if w < self.min_width or h < self.min_height:
+                            quality_stats["too_small"] += 1 (duplicate-code)
+app\zones\trusted_zone\__init__.py:1:0: R0801: Similar lines in 2 files
+==app.zones.formatted_zone.formatted_images:[151:158]
+==app.zones.trusted_zone.trusted_images:[189:196]
+                            continue
+
+                        # Blur check
+                        if self.cv2_available and self.blur_varlap_min is not None:
+                            blur_val = metrics.get("blur_varlap", 0.0)
+                            if blur_val < self.blur_varlap_min:
+                                quality_stats["too_blurry"] += 1 (duplicate-code)
+
+------------------------------------------------------------------
+Your code has been rated at 8.50/10 (previous run: 8.50/10, +0.00)
+

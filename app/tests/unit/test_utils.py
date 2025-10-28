@@ -2,27 +2,33 @@
 Unit tests for the data pipeline utilities.
 """
 
-import unittest
-import tempfile
 import os
-from unittest.mock import patch, MagicMock
+import tempfile
+import unittest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from app.utils import (
-    PipelineConfig, S3Client, Logger, PerformanceMonitor,
-    utc_timestamp, to_builtin, sanitize_filename, atomic_write_json,
-    validate_config
+    Logger,
+    PerformanceMonitor,
+    PipelineConfig,
+    S3Client,
+    atomic_write_json,
+    sanitize_filename,
+    to_builtin,
+    utc_timestamp,
+    validate_config,
 )
 
 
 class TestPipelineConfig(unittest.TestCase):
     """Test cases for PipelineConfig class."""
-    
+
     def setUp(self):
         """Set up test fixtures."""
         self.temp_dir = tempfile.mkdtemp()
         self.config_file = os.path.join(self.temp_dir, "test_config.yaml")
-        
+
         # Create a test config file
         test_config = """
 pipeline:
@@ -42,134 +48,135 @@ monitoring:
   enabled: true
   log_level: "DEBUG"
 """
-        with open(self.config_file, 'w') as f:
+        with open(self.config_file, "w") as f:
             f.write(test_config)
-    
+
     def tearDown(self):
         """Clean up test fixtures."""
         if os.path.exists(self.config_file):
             os.remove(self.config_file)
-    
+
     def test_config_loading(self):
         """Test configuration loading from YAML file."""
         config = PipelineConfig(self.config_file)
-        
+
         self.assertEqual(config.get("pipeline.dry_run"), True)
         self.assertEqual(config.get("pipeline.overwrite"), False)
         self.assertEqual(config.get("pipeline.batch_size"), 128)
         self.assertEqual(config.get("storage.buckets.landing_zone"), "test-landing-zone")
-    
+
     def test_config_defaults(self):
         """Test default configuration when file doesn't exist."""
         config = PipelineConfig("nonexistent.yaml")
-        
+
         self.assertEqual(config.get("pipeline.dry_run"), False)
         self.assertEqual(config.get("pipeline.batch_size"), 256)
-    
+
     def test_config_nested_access(self):
         """Test nested configuration access."""
         config = PipelineConfig(self.config_file)
-        
+
         self.assertEqual(config.get("storage.buckets.landing_zone"), "test-landing-zone")
         self.assertEqual(config.get("monitoring.log_level"), "DEBUG")
-    
+
     def test_config_missing_key(self):
         """Test accessing missing configuration keys."""
         config = PipelineConfig(self.config_file)
-        
+
         self.assertIsNone(config.get("nonexistent.key"))
         self.assertEqual(config.get("nonexistent.key", "default"), "default")
 
 
 class TestUtilityFunctions(unittest.TestCase):
     """Test cases for utility functions."""
-    
+
     def test_utc_timestamp(self):
         """Test UTC timestamp generation."""
         timestamp = utc_timestamp()
-        
+
         self.assertIsInstance(timestamp, str)
-        self.assertTrue(timestamp.endswith('Z'))
+        self.assertTrue(timestamp.endswith("Z"))
         self.assertEqual(len(timestamp), 20)  # Format: YYYY-MM-DDTHH-MM-SSZ
-    
+
     def test_to_builtin_decimal(self):
         """Test conversion of Decimal to built-in types."""
         from decimal import Decimal
-        
+
         # Test integer Decimal
-        result = to_builtin(Decimal('123'))
+        result = to_builtin(Decimal("123"))
         self.assertEqual(result, 123)
         self.assertIsInstance(result, int)
-        
+
         # Test float Decimal
-        result = to_builtin(Decimal('123.45'))
+        result = to_builtin(Decimal("123.45"))
         self.assertEqual(result, 123.45)
         self.assertIsInstance(result, float)
-    
+
     def test_to_builtin_dict(self):
         """Test conversion of dict with Decimals."""
         from decimal import Decimal
-        
+
         data = {
-            'int_val': Decimal('123'),
-            'float_val': Decimal('123.45'),
-            'nested': {
-                'decimal': Decimal('456.78')
-            }
+            "int_val": Decimal("123"),
+            "float_val": Decimal("123.45"),
+            "nested": {"decimal": Decimal("456.78")},
         }
-        
+
         result = to_builtin(data)
-        
-        self.assertEqual(result['int_val'], 123)
-        self.assertEqual(result['float_val'], 123.45)
-        self.assertEqual(result['nested']['decimal'], 456.78)
-        self.assertIsInstance(result['int_val'], int)
-        self.assertIsInstance(result['float_val'], float)
-        self.assertIsInstance(result['nested']['decimal'], float)
-    
+
+        self.assertEqual(result["int_val"], 123)
+        self.assertEqual(result["float_val"], 123.45)
+        self.assertEqual(result["nested"]["decimal"], 456.78)
+        self.assertIsInstance(result["int_val"], int)
+        self.assertIsInstance(result["float_val"], float)
+        self.assertIsInstance(result["nested"]["decimal"], float)
+
     def test_to_builtin_list(self):
         """Test conversion of list with Decimals."""
         from decimal import Decimal
-        
-        data = [Decimal('123'), Decimal('456.78')]
+
+        data = [Decimal("123"), Decimal("456.78")]
         result = to_builtin(data)
-        
+
         self.assertEqual(result, [123, 456.78])
         self.assertIsInstance(result[0], int)
         self.assertIsInstance(result[1], float)
-    
+
     def test_sanitize_filename(self):
         """Test filename sanitization."""
         # Test normal filename
         self.assertEqual(sanitize_filename("normal_file.txt"), "normal_file.txt")
-        
+
         # Test filename with special characters
         self.assertEqual(sanitize_filename("file with spaces.txt"), "file_with_spaces.txt")
-        self.assertEqual(sanitize_filename("file@with#special$chars.txt"), "file_with_special_chars.txt")
-        
+        self.assertEqual(
+            sanitize_filename("file@with#special$chars.txt"), "file_with_special_chars.txt"
+        )
+
         # Test empty filename
         self.assertEqual(sanitize_filename(""), "")
-    
+
     def test_atomic_write_json(self):
         """Test atomic JSON file writing."""
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as f:
             temp_file = f.name
-        
+
         try:
             test_data = {"key": "value", "number": 123}
             atomic_write_json(temp_file, test_data)
-            
+
             # Verify file was written correctly
             self.assertTrue(os.path.exists(temp_file))
-            
-            with open(temp_file, 'r') as f:
+
+            with open(temp_file, "r") as f:
                 loaded_data = f.read()
-            
+
             # Should be valid JSON
             import json
+
             parsed_data = json.loads(loaded_data)
             self.assertEqual(parsed_data, test_data)
-        
+
         finally:
             if os.path.exists(temp_file):
                 os.remove(temp_file)
@@ -177,18 +184,18 @@ class TestUtilityFunctions(unittest.TestCase):
 
 class TestLogger(unittest.TestCase):
     """Test cases for Logger class."""
-    
+
     def test_logger_creation(self):
         """Test logger creation."""
         logger = Logger("test_logger", "INFO")
-        
+
         self.assertIsNotNone(logger.logger)
         self.assertEqual(logger.logger.name, "test_logger")
-    
+
     def test_logger_methods(self):
         """Test logger methods."""
         logger = Logger("test_logger", "DEBUG")
-        
+
         # These should not raise exceptions
         logger.info("Test info message")
         logger.warning("Test warning message")
@@ -198,23 +205,23 @@ class TestLogger(unittest.TestCase):
 
 class TestPerformanceMonitor(unittest.TestCase):
     """Test cases for PerformanceMonitor class."""
-    
+
     def test_monitor_disabled(self):
         """Test monitor when disabled."""
         config = PipelineConfig("nonexistent.yaml")
         config._config["monitoring"]["enabled"] = False
-        
+
         monitor = PerformanceMonitor(config)
         monitor.start()
         monitor.stop()
-        
+
         # Should return empty dict when disabled
         metrics = monitor.stop()
         self.assertEqual(metrics, {})
-    
-    @patch('psutil.virtual_memory')
-    @patch('psutil.disk_usage')
-    @patch('psutil.cpu_percent')
+
+    @patch("psutil.virtual_memory")
+    @patch("psutil.disk_usage")
+    @patch("psutil.cpu_percent")
     def test_monitor_enabled(self, mock_cpu, mock_disk, mock_memory):
         """Test monitor when enabled."""
         # Mock psutil calls
@@ -222,59 +229,63 @@ class TestPerformanceMonitor(unittest.TestCase):
         mock_memory.return_value.percent = 50.0
         mock_disk.return_value.used = 2000000
         mock_cpu.return_value = 25.0
-        
+
         config = PipelineConfig("nonexistent.yaml")
         config._config["monitoring"]["enabled"] = True
-        
+
         monitor = PerformanceMonitor(config)
         monitor.start()
-        
+
         # Simulate some work
         import time
+
         time.sleep(0.01)
-        
+
         metrics = monitor.stop()
-        
+
         self.assertIn("execution_time", metrics)
         self.assertIn("memory_usage", metrics)
         self.assertIn("disk_usage", metrics)
         self.assertIn("peak_memory", metrics)
         self.assertIn("cpu_percent", metrics)
-        
+
         self.assertGreater(metrics["execution_time"], 0)
 
 
 class TestValidation(unittest.TestCase):
     """Test cases for configuration validation."""
-    
+
     def test_validate_config_missing_env_vars(self):
         """Test validation with missing environment variables."""
         config = PipelineConfig("nonexistent.yaml")
-        
+
         # Mock missing environment variables
         with patch.dict(os.environ, {}, clear=True):
             issues = validate_config(config)
-            
+
             self.assertGreater(len(issues), 0)
             self.assertTrue(any("MINIO_USER" in issue for issue in issues))
             self.assertTrue(any("MINIO_PASSWORD" in issue for issue in issues))
             self.assertTrue(any("MINIO_ENDPOINT" in issue for issue in issues))
-    
+
     def test_validate_config_valid(self):
         """Test validation with valid configuration."""
         config = PipelineConfig("nonexistent.yaml")
-        
+
         # Mock valid environment variables
-        with patch.dict(os.environ, {
-            "MINIO_USER": "test_user",
-            "MINIO_PASSWORD": "test_password",
-            "MINIO_ENDPOINT": "http://localhost:9000"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "MINIO_USER": "test_user",
+                "MINIO_PASSWORD": "test_password",
+                "MINIO_ENDPOINT": "http://localhost:9000",
+            },
+        ):
             issues = validate_config(config)
-            
+
             # Should have no issues
             self.assertEqual(len(issues), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -9,10 +9,11 @@ import os
 # Load environment variables from .env file
 try:
     from dotenv import load_dotenv
+
     # Try to load from app/.env first, then from root .env
     env_paths = [
-        os.path.join(os.path.dirname(__file__), '.env'),
-        os.path.join(os.path.dirname(__file__), '..', '.env')
+        os.path.join(os.path.dirname(__file__), ".env"),
+        os.path.join(os.path.dirname(__file__), "..", ".env"),
     ]
     for env_path in env_paths:
         if os.path.exists(env_path):
@@ -24,19 +25,19 @@ try:
 except ImportError:
     print("[WARNING] python-dotenv not available, using system environment variables")
 
-# Import all utilities from shared module
-from .shared import (
-    S3Client,
-    Logger,
-    ImageUtils,
-    KeyUtils,
-    utc_timestamp,
-    to_builtin,
-    sanitize_filename,
-    atomic_write_json,
-    error_handler
-)
-
 # Import configuration and monitoring
 from .config import PipelineConfig, validate_config
-from .monitoring import PipelineMonitor, ResourceMonitor, get_system_info, create_monitoring_report
+from .monitoring import PipelineMonitor, ResourceMonitor, create_monitoring_report, get_system_info
+
+# Import all utilities from shared module
+from .shared import (
+    ImageUtils,
+    KeyUtils,
+    Logger,
+    S3Client,
+    atomic_write_json,
+    error_handler,
+    sanitize_filename,
+    to_builtin,
+    utc_timestamp,
+)

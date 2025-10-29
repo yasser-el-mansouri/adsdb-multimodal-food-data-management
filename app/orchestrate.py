@@ -171,10 +171,15 @@ class PipelineOrchestrator:
             self.monitor.stop_monitoring()
             self.resource_monitor.stop_monitoring()
 
+            # Calculate total execution time even on error
+            pipeline_end_time = time.time()
+            total_execution_time = pipeline_end_time - pipeline_start_time
+
             final_metrics = {
                 "stages_completed": len(self.results),
                 "stages_failed": len(self.errors),
                 "total_stages": len(stages_to_run),
+                "execution_time": total_execution_time,
                 "results": self.results,
                 "errors": self.errors,
                 "pipeline_error": str(e),

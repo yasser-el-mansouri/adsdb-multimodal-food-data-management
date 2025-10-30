@@ -100,6 +100,9 @@ multimodal_tasks:
     image_embedding_model: 'ViT-B-32'
     image_pretrained: 'laion2b_s34b_b79k'
     default_k: 5
+    max_retrieved_images: 3
+    ollama_host: 'http://localhost:11434'
+    ollama_model: 'llava:7b'
 
 # File paths configuration
 file_paths:

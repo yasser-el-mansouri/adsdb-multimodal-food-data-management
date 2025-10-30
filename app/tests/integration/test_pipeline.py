@@ -26,6 +26,7 @@ from zones.trusted_zone.trusted_images import TrustedImagesProcessor
 from zones.trusted_zone.trusted_documents import TrustedDocumentsProcessor
 from zones.exploitation_zone.exploitation_documents import ExploitationDocumentsProcessor
 from zones.multimodal_tasks.task1_retrieval import Task1RetrievalProcessor
+from zones.multimodal_tasks.task3_rag import Task3RAGProcessor
 
 
 class TestPipelineIntegration(unittest.TestCase):
@@ -129,6 +130,9 @@ multimodal_tasks:
   image_embedding_model: "ViT-B-32"
   image_pretrained: "laion2b_s34b_b79k"
   default_k: 5
+  max_retrieved_images: 3
+  ollama_host: "http://localhost:11434"
+  ollama_model: "llava"
 
 monitoring:
   enabled: true
@@ -303,6 +307,42 @@ monitoring:
         self.assertEqual(processor.text_embedding_model, "all-MiniLM-L6-v2")
         self.assertEqual(processor.image_embedding_model, "ViT-B-32")
         self.assertEqual(processor.default_k, 5)
+
+    @patch.dict(
+        os.environ,
+        {
+            "MINIO_USER": "test_user",
+            "MINIO_PASSWORD": "test_password",
+            "MINIO_ENDPOINT": "http://localhost:9000",
+        },
+    )
+    @patch("zones.multimodal_tasks.task3_rag.PersistentClient")
+    @patch("zones.multimodal_tasks.task3_rag.open_clip.create_model_and_transforms")
+    @patch("zones.multimodal_tasks.task3_rag.httpx.get")
+    def test_task3_rag_processor_initialization(self, mock_httpx_get, mock_clip, mock_chroma):
+        """Test task 3 RAG processor initialization."""
+        # Mock Ollama connectivity check
+        mock_response = MagicMock()
+        mock_response.raise_for_status.return_value = None
+        mock_httpx_get.return_value = mock_response
+        
+        # Mock ChromaDB and CLIP
+        mock_chroma.return_value = MagicMock()
+        mock_clip.return_value = (MagicMock(), MagicMock(), None)
+        
+        config = PipelineConfig(self.config_file)
+        processor = Task3RAGProcessor(config)
+
+        self.assertEqual(processor.text_chroma_persist_dir, "test_text_chroma_dir")
+        self.assertEqual(processor.image_chroma_persist_dir, "test_image_chroma_dir")
+        self.assertEqual(processor.text_collection_name, "test_text_collection")
+        self.assertEqual(processor.image_collection_name, "test_image_collection")
+        self.assertEqual(processor.text_embedding_model, "all-MiniLM-L6-v2")
+        self.assertEqual(processor.image_embedding_model, "ViT-B-32")
+        self.assertEqual(processor.ollama_host, "http://localhost:11434")
+        self.assertEqual(processor.ollama_model, "llava")
+        self.assertEqual(processor.default_k, 5)
+        self.assertEqual(processor.max_retrieved_images, 3)
 
     def test_configuration_consistency(self):
         """Test that configuration is consistent across processors."""
@@ -486,6 +526,9 @@ multimodal_tasks:
   image_embedding_model: "ViT-B-32"
   image_pretrained: "laion2b_s34b_b79k"
   default_k: 5
+  max_retrieved_images: 3
+  ollama_host: "http://localhost:11434"
+  ollama_model: "llava"
 
 monitoring:
   enabled: true

@@ -24,6 +24,7 @@ from app.zones.landing_zone.persistent_landing import PersistentLandingProcessor
 
 # Import each zone processor from their respective zone folders
 from app.zones.landing_zone.temporal_landing import TemporalLandingProcessor
+from app.zones.multimodal_tasks.task1_retrieval import Task1RetrievalProcessor
 from app.zones.trusted_zone.trusted_documents import TrustedDocumentsProcessor
 from app.zones.trusted_zone.trusted_images import TrustedImagesProcessor
 
@@ -48,6 +49,7 @@ class PipelineOrchestrator:
             ("trusted_documents", TrustedDocumentsProcessor),
             ("exploitation_documents", ExploitationDocumentsProcessor),
             ("exploitation_images", ExploitationImagesProcessor),
+            ("task1_retrieval", Task1RetrievalProcessor),
         ]
 
         # Results storage

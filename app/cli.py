@@ -85,6 +85,8 @@ def status():
             ("trusted_images", "Extract recipe IDs and copy filtered images"),
             ("trusted_documents", "Filter documents and apply quality controls"),
             ("exploitation_documents", "Generate embeddings and store in ChromaDB"),
+            ("exploitation_images", "Generate image embeddings and store in ChromaDB"),
+            ("task1_retrieval", "Task 1: Multimodal retrieval operations"),
         ]
 
         for stage_name, description in stages:

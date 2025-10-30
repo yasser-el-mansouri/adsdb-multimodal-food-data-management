@@ -236,3 +236,24 @@ chroma_exploitation/
 chroma_exploitation/
 
 *.json
+
+# LaTeX files
+*.tex
+*.aux
+*.log
+*.out
+*.toc
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.pdf
+*.bbl
+*.blg
+*.brf
+*.lof
+*.lot
+*.tdo
+*.xdv
+*.nav
+*.snm
+*.vrb

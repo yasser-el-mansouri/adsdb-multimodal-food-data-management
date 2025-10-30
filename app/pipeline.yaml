@@ -80,21 +80,21 @@ chromadb_documents:
 # ChromaDB configuration for images
 chromadb_images:
     collection_name: 'exploitation_images'
-    embedding_model: 'OpenCLIP'
+    embedding_model: 'ViT-B-32'
     metadata: {}
     persist_dir: 'app/zones/exploitation_zone/chroma_exploitation'
 
 # ChromaDB configuration for multimodal (images + text)
 chromadb_multimodal:
     collection_name: 'exploitation_multimodal'
-    embedding_model: 'OpenCLIP'
+    embedding_model: 'ViT-B-32'
     metadata: {}
     persist_dir: 'app/zones/exploitation_zone/chroma_exploitation'
 
 # Multimodal tasks configuration
 multimodal_tasks:
-    text_chroma_persist_dir: 'app/zones/exploitation_zone/chroma_documents'
-    image_chroma_persist_dir: 'app/zones/exploitation_zone/chroma_images'
+    text_chroma_persist_dir: 'app/zones/exploitation_zone/chroma_exploitation'
+    image_chroma_persist_dir: 'app/zones/exploitation_zone/chroma_exploitation'
     text_collection_name: 'exploitation_documents'
     image_collection_name: 'exploitation_images'
     text_embedding_model: 'Qwen/Qwen3-Embedding-0.6B'

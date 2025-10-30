@@ -121,13 +121,13 @@ class PipelineConfig:
             },
             "chromadb_images": {
                 "collection_name": "exploitation_images",
-                "embedding_model": "OpenCLIP",
+                "embedding_model": "ViT-B-32",
                 "metadata": {},
                 "persist_dir": "app/zones/exploitation_zone/chroma_exploitation",
             },
             "chromadb_multimodal": {
                 "collection_name": "exploitation_multimodal",
-                "embedding_model": "OpenCLIP",
+                "embedding_model": "ViT-B-32",
                 "metadata": {},
                 "persist_dir": "app/zones/exploitation_zone/chroma_exploitation",
             },

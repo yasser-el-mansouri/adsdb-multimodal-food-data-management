@@ -98,11 +98,12 @@ def status():
             ("formatted_images", "Process and organize images"),
             ("trusted_images", "Extract recipe IDs and copy filtered images"),
             ("trusted_documents", "Filter documents and apply quality controls"),
-                ("exploitation_documents", "Generate embeddings and store in ChromaDB"),
-                ("exploitation_images", "Generate image embeddings and store in ChromaDB"),
-                ("task1_retrieval", "Task 1: Multimodal retrieval operations"),
-                ("task3_rag", "Task 3: Multimodal RAG with LLaVA (requires Ollama running)"),
-            ]
+            ("exploitation_documents", "Generate embeddings and store in ChromaDB"),
+            ("exploitation_images", "Generate image embeddings and store in ChromaDB"),
+            ("task1_retrieval", "Task 1: Multimodal retrieval operations"),
+            ("task2_multimodal_search", "Task 2: Multimodal search with text and image queries"),
+            ("task3_rag", "Task 3: Multimodal RAG with LLaVA (requires Ollama running)"),
+        ]
 
         for stage_name, description in stages:
             table.add_row(stage_name, description, "Available")

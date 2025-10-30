@@ -19,7 +19,6 @@ multimodal_tasks:
   image_collection_name: 'exploitation_images'
   text_embedding_model: 'Qwen/Qwen3-Embedding-0.6B'
   image_embedding_model: 'ViT-B-32'
-  image_pretrained: 'laion2b_s34b_b79k'
   default_k: 5
 ```
 
@@ -35,6 +34,50 @@ python -m app.zones.multimodal_tasks.task1_retrieval
 **Requirements**:
 - ChromaDB collections must be created by running `exploitation_documents` and `exploitation_images` stages first
 - No external services required
+
+---
+
+### Task 2: Multimodal Search (`task2.py`)
+
+Performs unified multimodal search operations on a combined collection containing both text and image data:
+- **Text-based search**: Query with text to find relevant recipes AND images
+- **Image-based search**: Query with an image to find similar images AND relevant recipes
+
+Unlike Task 1 which searches separate collections, Task 2 uses a single multimodal collection where text and images are indexed together, enabling cross-modal retrieval.
+
+**Configuration** (`pipeline.yaml`):
+```yaml
+chromadb_multimodal:
+  collection_name: 'exploitation_multimodal'
+  embedding_model: 'OpenCLIP'
+  metadata: {}
+  persist_dir: 'app/zones/exploitation_zone/chroma_exploitation'
+```
+
+**Usage**:
+```bash
+# Via CLI
+python -m app.cli run --stage task2_multimodal_search
+
+# Or directly
+python -m app.zones.multimodal_tasks.task2
+```
+
+**Example Queries**:
+- Text query: "fettuccine alfredo pasta dish with creamy sauce"
+- Image query: Using `calico-beans.jpg` as the query image
+
+**Requirements**:
+- ChromaDB multimodal collection must be populated with both text and image embeddings
+- Query images should be available (e.g., `calico-beans.jpg`, `fettuccine-alfredo.jpg`)
+- No external services required (uses OpenCLIP embeddings)
+
+**Output**:
+The processor returns distance statistics for both image and text matches:
+- Closest/farthest image match distances
+- Closest/farthest recipe text match distances
+
+This allows you to see how well text and images are aligned in the embedding space and which modality provides better matches for a given query.
 
 ---
 
@@ -151,6 +194,9 @@ Comprehensive tests are available:
 # Task 1
 pytest app/tests/unit/test_task1_retrieval.py -v
 
+# Task 2
+pytest app/tests/unit/test_task2_multimodal_search.py -v
+
 # Task 3
 pytest app/tests/unit/test_task3_rag.py -v
 ```
@@ -158,6 +204,7 @@ pytest app/tests/unit/test_task3_rag.py -v
 ### Integration Tests
 ```bash
 pytest app/tests/integration/test_pipeline.py::TestPipelineIntegration::test_task1_retrieval_processor_initialization -v
+pytest app/tests/integration/test_pipeline.py::TestPipelineIntegration::test_task2_multimodal_search_processor_initialization -v
 pytest app/tests/integration/test_pipeline.py::TestPipelineIntegration::test_task3_rag_processor_initialization -v
 ```
 
@@ -174,6 +221,7 @@ Both tasks are integrated into the main pipeline orchestrator:
 self.stages = [
     # ... other stages ...
     ("task1_retrieval", Task1RetrievalProcessor),
+    ("task2_multimodal_search", ExploitationMultiModalSearcher),
     ("task3_rag", Task3RAGProcessor),
 ]
 ```
@@ -221,6 +269,23 @@ python -m app.cli run --stage exploitation_images
 
 **Q: Empty results**  
 A: Check that embeddings were generated successfully. Verify ChromaDB directory exists and has data.
+
+### Task 2 Issues
+
+**Q: "Collection has 0 entries" or empty results**  
+A: Run the exploitation stages first to populate the multimodal collection:
+```bash
+python -m app.cli run --stages exploitation_documents,exploitation_images
+```
+
+**Q: "No text results found" in image search**  
+A: This is expected if `n_results` is too small. The task is configured to retrieve all 127 items (92 images + 35 texts) by default.
+
+**Q: Image file not found**  
+A: Ensure query images (e.g., `calico-beans.jpg`) are available in the correct locations:
+- `notebooks/exploitation_zone/tasks/`
+- Current working directory
+- Or provide absolute paths
 
 ### Task 3 Issues
 

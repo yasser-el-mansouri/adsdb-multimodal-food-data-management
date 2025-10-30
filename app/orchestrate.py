@@ -25,6 +25,7 @@ from app.zones.landing_zone.persistent_landing import PersistentLandingProcessor
 # Import each zone processor from their respective zone folders
 from app.zones.landing_zone.temporal_landing import TemporalLandingProcessor
 from app.zones.multimodal_tasks.task1_retrieval import Task1RetrievalProcessor
+from app.zones.multimodal_tasks.task2 import ExploitationMultiModalSearcher
 from app.zones.multimodal_tasks.task3_rag import Task3RAGProcessor
 from app.zones.trusted_zone.trusted_documents import TrustedDocumentsProcessor
 from app.zones.trusted_zone.trusted_images import TrustedImagesProcessor
@@ -51,6 +52,7 @@ class PipelineOrchestrator:
             ("exploitation_documents", ExploitationDocumentsProcessor),
             ("exploitation_images", ExploitationImagesProcessor),
             ("task1_retrieval", Task1RetrievalProcessor),
+            ("task2_multimodal_search", ExploitationMultiModalSearcher),
             ("task3_rag", Task3RAGProcessor),
         ]
 
@@ -156,7 +158,11 @@ class PipelineOrchestrator:
             }
 
             self.logger.info(f"[SUCCESS] Pipeline completed successfully!")
-            self.logger.info(f"[METRICS] Final metrics: {final_metrics}")
+            # Log summary metrics without verbose details
+            self.logger.info(
+                f"[METRICS] Stages: {final_metrics['stages_completed']}/{final_metrics['total_stages']} completed, "
+                f"Execution time: {final_metrics['execution_time']:.2f}s"
+            )
 
             # Generate and save monitoring report
             if self.config.get("monitoring.enabled", True):

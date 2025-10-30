@@ -61,9 +61,13 @@ adsdb-multimodal-food-data-management/
 │       ├── trusted_zone/          # Quality control
 │       │   ├── trusted_documents.py
 │       │   └── trusted_images.py
-│       └── exploitation_zone/     # Vector embeddings
-│           ├── exploitation_documents.py
-│           └── exploitation_images.py
+│       ├── exploitation_zone/     # Vector embeddings
+│       │   ├── exploitation_documents.py
+│       │   └── exploitation_images.py
+│       └── multimodal_tasks/      # Multimodal task implementations
+│           ├── task1_retrieval.py
+│           ├── task2.py
+│           └── task3_rag.py
 ├── notebooks/                     # Jupyter notebooks for exploration
 │   ├── landing_zone/
 │   ├── formatted_zone/
@@ -83,7 +87,13 @@ adsdb-multimodal-food-data-management/
 │   └── recipe_ids_with_images.json
 ├── app/zones/exploitation_zone/   # ChromaDB data
 │   ├── chroma_documents/
-│   └── chroma_images/
+│   ├── chroma_images/
+│   └── chroma_exploitation/       # Unified multimodal collection
+├── app/zones/multimodal_tasks/    # Multimodal task implementations
+│   ├── task1_retrieval.py         # Text-to-text and image-to-image search
+│   ├── task2.py                   # Unified multimodal search
+│   ├── task3_rag.py              # RAG with LLaVA
+│   └── README.md
 └── README.md
 ```
 
@@ -220,6 +230,35 @@ MINIO_ENDPOINT=http://localhost:9000
   - Batch processing for efficiency
   - Image metadata extraction
 
+### 9. Task 1: Multimodal Retrieval (`task1_retrieval`)
+- **Purpose**: Perform multimodal retrieval operations on recipe data
+- **Input**: ChromaDB collections (documents and images)
+- **Output**: Similar recipes and images based on queries
+- **Key Features**:
+  - Text-to-text search (find similar recipes)
+  - Image-to-image search (find visually similar images)
+  - No external services required
+
+### 10. Task 2: Multimodal Search (`task2_multimodal_search`)
+- **Purpose**: Unified multimodal search on combined collection
+- **Input**: ChromaDB multimodal collection (text + images)
+- **Output**: Cross-modal retrieval results
+- **Key Features**:
+  - Text queries return both recipes AND images
+  - Image queries return both images AND recipes
+  - Single unified collection for cross-modal search
+  - Distance statistics for match quality
+
+### 11. Task 3: Multimodal RAG with LLaVA (`task3_rag`)
+- **Purpose**: Retrieval-augmented generation with vision and language
+- **Input**: ChromaDB collections + user queries
+- **Output**: Generated responses with retrieved context
+- **Key Features**:
+  - Text and image retrieval
+  - LLaVA model for multimodal generation via Ollama
+  - Contextual responses using retrieved recipes and images
+  - Requires Ollama server running
+
 ## 🖥️ Running the Pipeline
 
 ### All Users
@@ -270,6 +309,9 @@ python app/cli.py run --stages trusted_images,trusted_documents
 # Run only the exploitation zone
 python app/cli.py run --stages exploitation_documents,exploitation_images
 
+# Run multimodal tasks (after exploitation zone is populated)
+python app/cli.py run --stages task1_retrieval,task2_multimodal_search,task3_rag
+
 # Run from formatted zone onwards (faster for development)
 python app/cli.py run --stages formatted_documents,formatted_images,trusted_images,trusted_documents,exploitation_documents,exploitation_images
 ```
@@ -280,6 +322,11 @@ python app/cli.py run --stages formatted_documents,formatted_images,trusted_imag
 python app/cli.py run --stage trusted_images
 python app/cli.py run --stage exploitation_documents
 python app/cli.py run --stage exploitation_images
+
+# Run multimodal tasks individually
+python app/cli.py run --stage task1_retrieval
+python app/cli.py run --stage task2_multimodal_search
+python app/cli.py run --stage task3_rag  # Requires Ollama server running
 ```
 
 #### Pipeline Options
@@ -343,8 +390,13 @@ chromadb_documents:
 
 chromadb_images:
   collection_name: "exploitation_images"
-  embedding_model: "OpenCLIP"
+  embedding_model: "ViT-B-32"
   persist_dir: "app/zones/exploitation_zone/chroma_images"
+
+chromadb_multimodal:
+  collection_name: "exploitation_multimodal"
+  embedding_model: "ViT-B-32"
+  persist_dir: "app/zones/exploitation_zone/chroma_exploitation"
 
 # Pipeline settings
 pipeline:
@@ -444,10 +496,19 @@ app/tests/
   - `atomic_write_json()`: Atomic JSON file writing
 - **Logger**: Logger creation and method functionality
 - **Validation**: Configuration validation with missing/valid environment variables
+- **Multimodal Tasks**:
+  - `Task1RetrievalProcessor`: Text and image retrieval
+  - `ExploitationMultiModalSearcher` (Task 2): Unified multimodal search
+  - `Task3RAGProcessor`: RAG with LLaVA
 
 **Run unit tests**:
 ```bash
 python -m pytest app/tests/unit/ -v
+
+# Run specific task tests
+python -m pytest app/tests/unit/test_task1_retrieval.py -v
+python -m pytest app/tests/unit/test_task2_multimodal_search.py -v
+python -m pytest app/tests/unit/test_task3_rag.py -v
 ```
 
 ### Integration Tests (`app/tests/integration/`)
@@ -457,10 +518,10 @@ python -m pytest app/tests/unit/ -v
 #### `test_pipeline.py` - Full Pipeline Integration
 
 **What it tests**:
-- **Processor Initialization**: All 7 pipeline processors can be initialized with test configuration
+- **Processor Initialization**: All pipeline processors can be initialized with test configuration
 - **Configuration Consistency**: Same configuration works across all processors
 - **Pipeline Dependencies**: Each stage can access its required configuration
-- **Data Flow**: Correct data flow between pipeline stages (landing → formatted → trusted → exploitation)
+- **Data Flow**: Correct data flow between pipeline stages (landing → formatted → trusted → exploitation → multimodal tasks)
 
 **Test Coverage**:
 - ✅ `TemporalLandingProcessor` initialization
@@ -470,6 +531,10 @@ python -m pytest app/tests/unit/ -v
 - ✅ `TrustedImagesProcessor` initialization
 - ✅ `TrustedDocumentsProcessor` initialization
 - ✅ `ExploitationDocumentsProcessor` initialization
+- ✅ `ExploitationImagesProcessor` initialization
+- ✅ `Task1RetrievalProcessor` initialization
+- ✅ `ExploitationMultiModalSearcher` (Task 2) initialization
+- ✅ `Task3RAGProcessor` initialization
 - ✅ Configuration consistency across all processors
 - ✅ Pipeline stage dependencies
 - ✅ Data flow between stages

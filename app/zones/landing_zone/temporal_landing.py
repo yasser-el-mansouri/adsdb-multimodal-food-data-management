@@ -191,9 +191,9 @@ class TemporalLandingProcessor:
                         ok += 1
 
                 # Limit for testing (configurable)
-                max_processed = 1  # self.config.get("testing.max_processed", 50)
-                max_recipes = 2  # self.config.get("testing.max_recipes", 1000)
-                if ok > max_processed or total_recipes > max_recipes:
+                max_processed = self.config.get("testing.max_processed", 50)
+                max_recipes = self.config.get("testing.max_recipes", 1000)
+                if ok >= max_processed or total_recipes >= max_recipes:
                     break
 
             self.logger.info(

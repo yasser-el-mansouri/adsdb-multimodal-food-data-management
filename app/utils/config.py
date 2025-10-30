@@ -117,13 +117,19 @@ class PipelineConfig:
                 "collection_name": "exploitation_documents",
                 "embedding_model": "Qwen/Qwen3-Embedding-0.6B",
                 "metadata": {},
-                "persist_dir": "app/zones/exploitation_zone/chroma_documents",
+                "persist_dir": "app/zones/exploitation_zone/chroma_exploitation",
             },
             "chromadb_images": {
                 "collection_name": "exploitation_images",
-                "embedding_model": "clip-ViT-B-32",
+                "embedding_model": "OpenCLIP",
                 "metadata": {},
-                "persist_dir": "app/zones/exploitation_zone/chroma_images",
+                "persist_dir": "app/zones/exploitation_zone/chroma_exploitation",
+            },
+            "chromadb_multimodal": {
+                "collection_name": "exploitation_multimodal",
+                "embedding_model": "OpenCLIP",
+                "metadata": {},
+                "persist_dir": "app/zones/exploitation_zone/chroma_exploitation",
             },
             "file_paths": {
                 "image_index": "app/zones/landing_zone/image_index.json",

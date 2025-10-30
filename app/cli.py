@@ -54,6 +54,20 @@ def run(
         if config != "app/pipeline.yaml":
             cmd.extend(["--config", config])
 
+        # Check if task3_rag is in the stages and show Ollama warning
+        stages_to_run = []
+        if stages:
+            stages_to_run.extend(stages.split(","))
+        if stage:
+            stages_to_run.append(stage)
+        
+        if "task3_rag" in stages_to_run:
+            console.print("\n[bold yellow]⚠️  IMPORTANT: task3_rag requires Ollama[/bold yellow]")
+            console.print("[yellow]Before running this stage, ensure:[/yellow]")
+            console.print("[yellow]  1. Ollama is running: [bold]ollama serve[/bold][/yellow]")
+            console.print("[yellow]  2. LLaVA model installed: [bold]ollama pull llava[/bold][/yellow]")
+            console.print("[yellow]  3. Check status: [bold]ollama list[/bold][/yellow]\n")
+        
         console.print(f"[bold blue]Running command:[/bold blue] {' '.join(cmd)}")
 
         # Run the orchestrator
@@ -84,8 +98,11 @@ def status():
             ("formatted_images", "Process and organize images"),
             ("trusted_images", "Extract recipe IDs and copy filtered images"),
             ("trusted_documents", "Filter documents and apply quality controls"),
-            ("exploitation_documents", "Generate embeddings and store in ChromaDB"),
-        ]
+                ("exploitation_documents", "Generate embeddings and store in ChromaDB"),
+                ("exploitation_images", "Generate image embeddings and store in ChromaDB"),
+                ("task1_retrieval", "Task 1: Multimodal retrieval operations"),
+                ("task3_rag", "Task 3: Multimodal RAG with LLaVA (requires Ollama running)"),
+            ]
 
         for stage_name, description in stages:
             table.add_row(stage_name, description, "Available")

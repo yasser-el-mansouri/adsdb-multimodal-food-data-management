@@ -25,6 +25,8 @@ from zones.formatted_zone.formatted_images import FormattedImagesProcessor
 from zones.trusted_zone.trusted_images import TrustedImagesProcessor
 from zones.trusted_zone.trusted_documents import TrustedDocumentsProcessor
 from zones.exploitation_zone.exploitation_documents import ExploitationDocumentsProcessor
+from zones.multimodal_tasks.task1_retrieval import Task1RetrievalProcessor
+from zones.multimodal_tasks.task3_rag import Task3RAGProcessor
 
 
 class TestPipelineIntegration(unittest.TestCase):
@@ -118,6 +120,19 @@ chromadb_documents:
     modality: "text"
     model: "all-MiniLM-L6-v2"
     source: "minio"
+
+multimodal_tasks:
+  text_chroma_persist_dir: "test_text_chroma_dir"
+  image_chroma_persist_dir: "test_image_chroma_dir"
+  text_collection_name: "test_text_collection"
+  image_collection_name: "test_image_collection"
+  text_embedding_model: "all-MiniLM-L6-v2"
+  image_embedding_model: "ViT-B-32"
+  image_pretrained: "laion2b_s34b_b79k"
+  default_k: 5
+  max_retrieved_images: 3
+  ollama_host: "http://localhost:11434"
+  ollama_model: "llava"
 
 monitoring:
   enabled: true
@@ -266,6 +281,69 @@ monitoring:
         # persist_dir now comes from config, not environment variable
         self.assertEqual(processor.persist_dir, "app/zones/exploitation_zone/chroma_documents")
 
+    @patch.dict(
+        os.environ,
+        {
+            "MINIO_USER": "test_user",
+            "MINIO_PASSWORD": "test_password",
+            "MINIO_ENDPOINT": "http://localhost:9000",
+        },
+    )
+    @patch("zones.multimodal_tasks.task1_retrieval.PersistentClient")
+    @patch("zones.multimodal_tasks.task1_retrieval.open_clip.create_model_and_transforms")
+    def test_task1_retrieval_processor_initialization(self, mock_clip, mock_chroma):
+        """Test task 1 retrieval processor initialization."""
+        # Mock ChromaDB and CLIP
+        mock_chroma.return_value = MagicMock()
+        mock_clip.return_value = (MagicMock(), MagicMock(), None)
+        
+        config = PipelineConfig(self.config_file)
+        processor = Task1RetrievalProcessor(config)
+
+        self.assertEqual(processor.text_chroma_persist_dir, "test_text_chroma_dir")
+        self.assertEqual(processor.image_chroma_persist_dir, "test_image_chroma_dir")
+        self.assertEqual(processor.text_collection_name, "test_text_collection")
+        self.assertEqual(processor.image_collection_name, "test_image_collection")
+        self.assertEqual(processor.text_embedding_model, "all-MiniLM-L6-v2")
+        self.assertEqual(processor.image_embedding_model, "ViT-B-32")
+        self.assertEqual(processor.default_k, 5)
+
+    @patch.dict(
+        os.environ,
+        {
+            "MINIO_USER": "test_user",
+            "MINIO_PASSWORD": "test_password",
+            "MINIO_ENDPOINT": "http://localhost:9000",
+        },
+    )
+    @patch("zones.multimodal_tasks.task3_rag.PersistentClient")
+    @patch("zones.multimodal_tasks.task3_rag.open_clip.create_model_and_transforms")
+    @patch("zones.multimodal_tasks.task3_rag.httpx.get")
+    def test_task3_rag_processor_initialization(self, mock_httpx_get, mock_clip, mock_chroma):
+        """Test task 3 RAG processor initialization."""
+        # Mock Ollama connectivity check
+        mock_response = MagicMock()
+        mock_response.raise_for_status.return_value = None
+        mock_httpx_get.return_value = mock_response
+        
+        # Mock ChromaDB and CLIP
+        mock_chroma.return_value = MagicMock()
+        mock_clip.return_value = (MagicMock(), MagicMock(), None)
+        
+        config = PipelineConfig(self.config_file)
+        processor = Task3RAGProcessor(config)
+
+        self.assertEqual(processor.text_chroma_persist_dir, "test_text_chroma_dir")
+        self.assertEqual(processor.image_chroma_persist_dir, "test_image_chroma_dir")
+        self.assertEqual(processor.text_collection_name, "test_text_collection")
+        self.assertEqual(processor.image_collection_name, "test_image_collection")
+        self.assertEqual(processor.text_embedding_model, "all-MiniLM-L6-v2")
+        self.assertEqual(processor.image_embedding_model, "ViT-B-32")
+        self.assertEqual(processor.ollama_host, "http://localhost:11434")
+        self.assertEqual(processor.ollama_model, "llava")
+        self.assertEqual(processor.default_k, 5)
+        self.assertEqual(processor.max_retrieved_images, 3)
+
     def test_configuration_consistency(self):
         """Test that configuration is consistent across processors."""
         config = PipelineConfig(self.config_file)
@@ -280,6 +358,9 @@ monitoring:
             TrustedDocumentsProcessor,
             ExploitationDocumentsProcessor,
         ]
+        
+        # Task1 processor needs special mocking
+        task1_processor = Task1RetrievalProcessor
 
         for processor_class in processors:
             with patch.dict(
@@ -299,6 +380,16 @@ monitoring:
                     self.assertIsNotNone(processor)
                 except Exception as e:
                     self.fail(f"Failed to initialize {processor_class.__name__}: {e}")
+            
+            # Test task1 processor with mocking
+            with patch("zones.multimodal_tasks.task1_retrieval.PersistentClient"):
+                with patch("zones.multimodal_tasks.task1_retrieval.open_clip.create_model_and_transforms") as mock_clip:
+                    mock_clip.return_value = (MagicMock(), MagicMock(), None)
+                    try:
+                        processor = task1_processor(config)
+                        self.assertIsNotNone(processor)
+                    except Exception as e:
+                        self.fail(f"Failed to initialize {task1_processor.__name__}: {e}")
 
     def test_pipeline_stage_dependencies(self):
         """Test that pipeline stages have correct dependencies."""
@@ -426,6 +517,19 @@ chromadb_documents:
     model: "all-MiniLM-L6-v2"
     source: "minio"
 
+multimodal_tasks:
+  text_chroma_persist_dir: "test_text_chroma_dir"
+  image_chroma_persist_dir: "test_image_chroma_dir"
+  text_collection_name: "test_text_collection"
+  image_collection_name: "test_image_collection"
+  text_embedding_model: "all-MiniLM-L6-v2"
+  image_embedding_model: "ViT-B-32"
+  image_pretrained: "laion2b_s34b_b79k"
+  default_k: 5
+  max_retrieved_images: 3
+  ollama_host: "http://localhost:11434"
+  ollama_model: "llava"
+
 monitoring:
   enabled: true
   log_level: "INFO"
@@ -489,6 +593,14 @@ monitoring:
             # Stage 7: Exploitation Documents (Trusted Zone -> ChromaDB)
             exploitation = ExploitationDocumentsProcessor(config)
             self.assertEqual(exploitation.src_bucket, "test-trusted-zone")
+            
+            # Stage 8: Task 1 Retrieval (ChromaDB -> Query Results)
+            with patch("zones.multimodal_tasks.task1_retrieval.PersistentClient"):
+                with patch("zones.multimodal_tasks.task1_retrieval.open_clip.create_model_and_transforms") as mock_clip:
+                    mock_clip.return_value = (MagicMock(), MagicMock(), None)
+                    task1 = Task1RetrievalProcessor(config)
+                    self.assertEqual(task1.text_chroma_persist_dir, "test_text_chroma_dir")
+                    self.assertEqual(task1.image_chroma_persist_dir, "test_image_chroma_dir")
 
 
 if __name__ == "__main__":
